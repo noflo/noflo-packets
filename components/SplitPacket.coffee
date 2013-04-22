@@ -1,4 +1,3 @@
-owl = require("owl-deepcopy")
 noflo = require("noflo")
 _ = require("underscore")
 
@@ -12,30 +11,20 @@ class SplitPacket extends noflo.Component
     @outPorts =
       out: new noflo.Port
 
-    @inPorts.in.on "data", (data) =>
-      groups = @inPorts.in.getGroups()
-      buffer = @inPorts.in.getBuffer()
+    @inPorts.in.on "connect", =>
+      @groups = []
 
-      @outPorts.out.setBuffer(buffer)
+    @inPorts.in.on "begingroup", (group) =>
+      @groups.push(group)
+
+    @inPorts.in.on "data", (data) =>
+      @outPorts.out.connect()
+      @outPorts.out.beginGroup(group) for group in @groups
+      @outPorts.out.send(data)
+      @outPorts.out.endGroup() for group in @groups
       @outPorts.out.disconnect()
 
-      # Get rid of the inserted data IP
-      buf = buffer
-      for group in groups
-        buf = buf[group]
-      delete buf["__DATA__"]
-
-      # Reset buffer
-      @inPorts.in.setBuffer(buffer)
-
     @inPorts.in.on "endgroup", (group) =>
-      # Remove group if it's empty
-      groups = @inPorts.in.getGroups()
-      buffer = @inPorts.in.getBuffer()
-
-      for group in groups
-        buffer = buffer[group]
-      if _.isEmpty(buffer[group])
-        delete buffer[group]
+      @groups.pop()
 
 exports.getComponent = -> new SplitPacket

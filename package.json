@@ -7,7 +7,7 @@
   , "utilities"
   ]
 , "author": "Kenneth Kan <kenhkan@gmail.com>"
-, "version": "0.0.1"
+, "version": "0.0.2"
 , "licenses":
   [ { "type": "MIT"
     , "url": "https://github.com/kenhkan/noflo-packets/blob/master/LICENSE.md"
@@ -39,6 +39,7 @@
     , "DoNotDisconnect": "./components/DoNotDisconnect.coffee"
     , "OnlyDisconnect": "./components/OnlyDisconnect.coffee"
     , "SplitPacket": "./components/SplitPacket.coffee"
+    , "First": "./components/First.coffee"
     }
   , "graphs":
     { "MergeConnections": "./graphs/MergeConnections.fbp"

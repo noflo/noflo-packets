@@ -35,7 +35,7 @@
     { "Arrayify": "./components/Arrayify.coffee"
     , "CloseConnection": "./components/CloseConnection.coffee"
     , "Counter": "./components/Counter.coffee"
-    , "DefaultPackets": "./components/DefaultPackets.coffee"
+    , "Defaults": "./components/Defaults.coffee"
     , "DoNotDisconnect": "./components/DoNotDisconnect.coffee"
     , "MergeConnections": "./components/MergeConnections.coffee"
     , "SplitPackets": "./components/SplitPackets.coffee"

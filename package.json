@@ -24,6 +24,7 @@
   { "noflo": "0.3.x"
   , "underscore": "1.4.x"
   , "underscore.string": "2.3.x"
+  , "noflo-flow": "0.0.x"
   }
 , "devDependencies":
   { "coffeelint": "*"
@@ -33,12 +34,14 @@
 , "noflo":
   { "components":
     { "Arrayify": "./components/Arrayify.coffee"
-    , "CloseConnection": "./components/CloseConnection.coffee"
     , "Counter": "./components/Counter.coffee"
     , "Defaults": "./components/Defaults.coffee"
     , "DoNotDisconnect": "./components/DoNotDisconnect.coffee"
-    , "MergeConnections": "./components/MergeConnections.coffee"
+    , "OnlyDisconnect": "./components/OnlyDisconnect.coffee"
     , "SplitPackets": "./components/SplitPackets.coffee"
+    }
+  , "graphs":
+    { "MergeConnections": "./graphs/MergeConnections.fbp"
     }
   }
 , "scripts":

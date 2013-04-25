@@ -1,6 +1,6 @@
-EXPORT=SPLIT.IN:IN
-EXPORT=MERGE.OUT:OUT
+EXPORT=MERGEINPUT.IN:IN
+EXPORT=MERGEOUTPUT.OUT:OUT
 EXPORT=COUNTDOWN.COUNT:COUNT
 
-Split(Split) OUT -> IN Content(packets/DoNotDisconnect) OUT -> IN MergeOutput(Merge)
+MergeInput(Merge) OUT -> IN Split(Split) OUT -> IN Content(packets/DoNotDisconnect) OUT -> IN MergeOutput(Merge)
 Split() OUT -> IN Disconnects(packets/OnlyDisconnect) OUT -> IN CountDown(flow/CountDown) OUT -> IN MergeOutput()

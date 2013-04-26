@@ -40,6 +40,7 @@
     , "OnlyDisconnect": "./components/OnlyDisconnect.coffee"
     , "SplitPacket": "./components/SplitPacket.coffee"
     , "First": "./components/First.coffee"
+    , "Flatten": "./components/Flatten.coffee"
     }
   , "graphs":
     { "MergeConnections": "./graphs/MergeConnections.fbp"

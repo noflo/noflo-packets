@@ -11,6 +11,7 @@ class OnlyDisconnect extends noflo.Component
       out: new noflo.Port
 
     @inPorts.in.on "disconnect", =>
+      @outPorts.out.connect()
       @outPorts.out.disconnect()
 
 exports.getComponent = -> new OnlyDisconnect

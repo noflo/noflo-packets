@@ -1,6 +1,4 @@
-EXPORT=MERGEINPUT.IN:IN
-EXPORT=MERGEOUTPUT.OUT:OUT
-EXPORT=COUNTDOWN.COUNT:COUNT
+EXPORT=MERGE.IN:IN
+EXPORT=FLATTEN.OUT:OUT
 
-MergeInput(Merge) OUT -> IN Split(Split) OUT -> IN Content(packets/DoNotDisconnect) OUT -> IN MergeOutput(Merge)
-Split() OUT -> IN Disconnects(packets/OnlyDisconnect) OUT -> IN CountDown(flow/CountDown) OUT -> IN MergeOutput()
+Merge(Merge) OUT -> IN Flatten(packets/Flatten)

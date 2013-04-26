@@ -41,6 +41,7 @@
     , "SplitPacket": "./components/SplitPacket.coffee"
     , "First": "./components/First.coffee"
     , "Flatten": "./components/Flatten.coffee"
+    , "PairsToObject": "./components/PairsToObject.coffee"
     }
   , "graphs":
     { "MergeConnections": "./graphs/MergeConnections.fbp"

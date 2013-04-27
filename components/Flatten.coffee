@@ -30,7 +30,8 @@ class Flatten extends noflo.Component
       @groups.pop()
 
     @inPorts.in.on "disconnect", =>
-      @flush (@flatten @cache).nodes
+      { packets, nodes } = @flatten @cache
+      @flush _.extend packets, nodes
       @outPorts.out.disconnect()
 
   locate: ->

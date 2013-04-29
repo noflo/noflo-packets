@@ -35,6 +35,7 @@
   { "components":
     { "Arrayify": "./components/Arrayify.coffee"
     , "Counter": "./components/Counter.coffee"
+    , "Unzip": "./components/Unzip.coffee"
     , "Defaults": "./components/Defaults.coffee"
     , "DoNotDisconnect": "./components/DoNotDisconnect.coffee"
     , "OnlyDisconnect": "./components/OnlyDisconnect.coffee"

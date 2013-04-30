@@ -1,5 +1,0 @@
-EXPORT=ARRAYIFY.IN:IN
-EXPORT=JOIN.OUT:OUT
-EXPORT=JOIN.DELIMITER:DELIMITER
-
-Arrayify(packets/Arrayify) OUT -> IN Join(objects/Join)

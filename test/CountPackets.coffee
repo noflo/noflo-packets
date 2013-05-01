@@ -1,6 +1,6 @@
 test = require "noflo-test"
 
-test.component("packets/Counter").
+test.component("packets/CountPackets").
   discuss("given some IPs").
     send.connect("in").
       send.data("in", "a").

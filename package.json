@@ -33,7 +33,7 @@
   }
 , "noflo":
   { "components":
-    { "Counter": "./components/Counter.coffee"
+    { "CountPackets": "./components/CountPackets.coffee"
     , "Unzip": "./components/Unzip.coffee"
     , "Defaults": "./components/Defaults.coffee"
     , "DoNotDisconnect": "./components/DoNotDisconnect.coffee"
@@ -41,6 +41,8 @@
     , "SplitPacket": "./components/SplitPacket.coffee"
     , "First": "./components/First.coffee"
     , "Flatten": "./components/Flatten.coffee"
+    , "Compact": "./components/Compact.coffee"
+    , "Zip": "./components/Zip.coffee"
     }
   , "graphs":
     { "MergeConnections": "./graphs/MergeConnections.fbp"

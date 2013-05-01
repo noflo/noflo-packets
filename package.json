@@ -24,7 +24,6 @@
   { "noflo": "https://github.com/kenhkan/noflo/tarball/master"
   , "underscore": "1.4.x"
   , "underscore.string": "2.3.x"
-  , "noflo-flow": "0.0.x"
   }
 , "devDependencies":
   { "coffeelint": "*"

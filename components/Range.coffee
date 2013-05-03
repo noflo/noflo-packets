@@ -1,26 +1,42 @@
 noflo = require("noflo")
 _ = require("underscore")
 
-class First extends noflo.Component
+class Range extends noflo.Component
 
   description: "only forward the first packet in a connection"
 
   constructor: ->
+    @start = -Infinity
+    @end = +Infinity
+    @length = +Infinity
+
     @inPorts =
       in: new noflo.Port
+      start: new noflo.Port
+      end: new noflo.Port
+      length: new noflo.Port
     @outPorts =
       out: new noflo.Port
 
+    @inPorts.start.on "data", (@start) =>
+    @inPorts.end.on "data", (@end) =>
+    @inPorts.length.on "data", (@length) =>
+
     @inPorts.in.on "connect", =>
-      @hasSent = false
+      @totalCount = 0
+      @sentCount = 0
 
     @inPorts.in.on "begingroup", (group) =>
       @outPorts.out.beginGroup(group)
 
     @inPorts.in.on "data", (data) =>
-      unless @hasSent
+      @totalCount++
+
+      if @totalCount > @start and
+         @totalCount < @end and
+         @sentCount < @length
+        @sentCount++
         @outPorts.out.send(data)
-        @hasSent = true
 
     @inPorts.in.on "endgroup", (group) =>
       @outPorts.out.endGroup()
@@ -28,4 +44,4 @@ class First extends noflo.Component
     @inPorts.in.on "disconnect", =>
       @outPorts.out.disconnect()
 
-exports.getComponent = -> new First
+exports.getComponent = -> new Range

@@ -1,9 +1,11 @@
 noflo = require("noflo")
 _ = require("underscore")
+_s = require("underscore.string")
 
 class Range extends noflo.Component
 
-  description: "only forward the first packet in a connection"
+  description: _s.clean "only forward a specified number of packets in a
+  connection"
 
   constructor: ->
     @start = -Infinity

@@ -16,6 +16,8 @@ class Defaults extends noflo.Component
     @outPorts =
       out: new noflo.Port
 
+    @inPorts.default.on "connect", =>
+      @defaults = []
     @inPorts.default.on "data", (data) =>
       @defaults.push(data)
 

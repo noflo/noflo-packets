@@ -42,6 +42,7 @@
     , "Flatten": "./components/Flatten.coffee"
     , "Compact": "./components/Compact.coffee"
     , "Zip": "./components/Zip.coffee"
+    , "FilterByPosition": "./components/FilterByPosition.coffee"
     }
   , "graphs":
     { "MergeConnections": "./graphs/MergeConnections.fbp"

@@ -7,7 +7,7 @@
   , "utilities"
   ]
 , "author": "Kenneth Kan <kenhkan@gmail.com>"
-, "version": "0.0.5"
+, "version": "0.0.6"
 , "licenses":
   [ { "type": "MIT"
     , "url": "https://github.com/kenhkan/noflo-packets/blob/master/LICENSE.md"
@@ -42,6 +42,7 @@
     , "Flatten": "./components/Flatten.coffee"
     , "Compact": "./components/Compact.coffee"
     , "Zip": "./components/Zip.coffee"
+    , "FilterPackets": "./components/FilterPackets.coffee"
     , "FilterByPosition": "./components/FilterByPosition.coffee"
     }
   , "graphs":

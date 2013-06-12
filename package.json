@@ -7,7 +7,7 @@
   , "utilities"
   ]
 , "author": "Kenneth Kan <kenhkan@gmail.com>"
-, "version": "0.0.6"
+, "version": "0.0.7"
 , "licenses":
   [ { "type": "MIT"
     , "url": "https://github.com/kenhkan/noflo-packets/blob/master/LICENSE.md"

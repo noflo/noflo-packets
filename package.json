@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/noflo/noflo-packets"
+    "url": "https://github.com/noflo/noflo-packets"
   },
   "dependencies": {
     "noflo": "https://github.com/kenhkan/noflo/tarball/release",

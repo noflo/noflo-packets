@@ -8,7 +8,13 @@
     "utilities"
   ],
   "author": "Kenneth Kan <kenhkan@gmail.com>",
-  "version": "0.0.7",
+  "contributors": [
+    {
+      "name": "Henri Bergius",
+      "email": "henri.bergius@iki.fi"
+    }
+  ],
+  "version": "0.0.8",
   "licenses": [
     {
       "type": "MIT",
@@ -46,7 +52,7 @@
       "Zip": "./components/Zip.coffee",
       "SendWith": "./components/SendWith.coffee",
       "FilterPackets": "./components/FilterPackets.coffee",
-      "FilterByPosition": "./components/FilterByPosition.coffee"
+      "FilterByPosition": "./components/FilterByPosition.coffee",
       "FilterPacket": "./components/FilterPacket.coffee",
       "UniquePacket": "./components/UniquePacket.coffee",
       "GroupByPacket": "./components/GroupByPacket.coffee",

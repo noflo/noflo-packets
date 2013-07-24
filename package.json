@@ -29,7 +29,7 @@
     "url": "git://github.com/noflo/noflo-packets"
   },
   "dependencies": {
-    "noflo": "https://github.com/kenhkan/noflo/tarball/master",
+    "noflo": "https://github.com/kenhkan/noflo/tarball/release",
     "underscore": "1.4.x",
     "underscore.string": "2.3.x"
   },

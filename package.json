@@ -47,6 +47,11 @@
       "SendWith": "./components/SendWith.coffee",
       "FilterPackets": "./components/FilterPackets.coffee",
       "FilterByPosition": "./components/FilterByPosition.coffee"
+      "FilterPacket": "./components/FilterPacket.coffee",
+      "UniquePacket": "./components/UniquePacket.coffee",
+      "GroupByPacket": "./components/GroupByPacket.coffee",
+      "LastPacket": "./components/LastPacket.coffee",
+      "Counter": "./components/Counter.coffee"
     },
     "graphs": {
       "MergeConnections": "./graphs/MergeConnections.fbp",

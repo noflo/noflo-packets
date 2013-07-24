@@ -1,4 +1,4 @@
-noflo = require "../../lib/NoFlo"
+noflo = require 'noflo'
 
 class UniquePacket extends noflo.Component
   constructor: ->
@@ -10,13 +10,13 @@ class UniquePacket extends noflo.Component
       out: new noflo.Port()
       duplicate: new noflo.Port()
 
-    @inPorts.in.on "data", (data) =>
+    @inPorts.in.on 'data', (data) =>
       unless @unique data
         return unless @outPorts.duplicate.isAttached()
         @outPorts.duplicate.send data
         return
       @outPorts.out.send data
-    @inPorts.in.on "disconnect", =>
+    @inPorts.in.on 'disconnect', =>
       @outPorts.out.disconnect()
 
   unique: (packet) ->

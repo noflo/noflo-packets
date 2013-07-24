@@ -1,9 +1,9 @@
-noflo = require '../../lib/NoFlo'
+noflo = require 'noflo'
 
 class Counter extends noflo.Component
-  description: "The count component receives input on a single input port,
+  description: 'The count component receives input on a single input port,
     and sends the number of data packets received to the output port when
-    the input disconnects"
+    the input disconnects'
 
   constructor: ->
     @count = null

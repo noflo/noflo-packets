@@ -1,4 +1,4 @@
-noflo = require "../../lib/NoFlo"
+noflo = require 'noflo'
 
 class FilterPacket extends noflo.Component
   constructor: ->
@@ -11,17 +11,17 @@ class FilterPacket extends noflo.Component
       out: new noflo.Port()
       missed: new noflo.Port()
 
-    @inPorts.regexp.on "data", (data) =>
+    @inPorts.regexp.on 'data', (data) =>
       @regexps.push data
 
-    @inPorts.in.on "begingroup", (group) =>
+    @inPorts.in.on 'begingroup', (group) =>
       @outPorts.out.beginGroup group
-    @inPorts.in.on "data", (data) =>
+    @inPorts.in.on 'data', (data) =>
       return @filterData data if @regexps.length
       @outPorts.out.send data
-    @inPorts.in.on "endgroup", =>
+    @inPorts.in.on 'endgroup', =>
       @outPorts.out.endGroup()
-    @inPorts.in.on "disconnect", =>
+    @inPorts.in.on 'disconnect', =>
       @outPorts.out.disconnect()
       @outPorts.missed.disconnect()
 

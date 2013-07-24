@@ -1,58 +1,60 @@
-{ "name": "noflo-packets"
-, "description": "Packet Utilities for NoFlo"
-, "keywords":
-  [ "noflo"
-  , "packets"
-  , "connections"
-  , "utilities"
-  ]
-, "author": "Kenneth Kan <kenhkan@gmail.com>"
-, "version": "0.0.7"
-, "licenses":
-  [ { "type": "MIT"
-    , "url": "https://github.com/kenhkan/noflo-packets/blob/master/LICENSE.md"
+{
+  "name": "noflo-packets",
+  "description": "Packet Utilities for NoFlo",
+  "keywords": [
+    "noflo",
+    "packets",
+    "connections",
+    "utilities"
+  ],
+  "author": "Kenneth Kan <kenhkan@gmail.com>",
+  "version": "0.0.7",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/kenhkan/noflo-packets/blob/master/LICENSE.md"
     }
-  ]
-, "engines":
-  { "node": ">=0.6.0"
-  }
-, "repository":
-  { "type": "git"
-  , "url": "git://github.com/kenhkan/noflo-packets"
-  }
-, "dependencies":
-  { "noflo": "https://github.com/kenhkan/noflo/tarball/master"
-  , "underscore": "1.4.x"
-  , "underscore.string": "2.3.x"
-  }
-, "devDependencies":
-  { "coffeelint": "*"
-  , "coffee-script": "1.6.x"
-  , "noflo-test": "https://github.com/kenhkan/noflo-test/tarball/master"
-  }
-, "noflo":
-  { "components":
-    { "CountPackets": "./components/CountPackets.coffee"
-    , "Unzip": "./components/Unzip.coffee"
-    , "Defaults": "./components/Defaults.coffee"
-    , "DoNotDisconnect": "./components/DoNotDisconnect.coffee"
-    , "OnlyDisconnect": "./components/OnlyDisconnect.coffee"
-    , "SplitPacket": "./components/SplitPacket.coffee"
-    , "Range": "./components/Range.coffee"
-    , "Flatten": "./components/Flatten.coffee"
-    , "Compact": "./components/Compact.coffee"
-    , "Zip": "./components/Zip.coffee"
-    , "SendWith": "./components/SendWith.coffee"
-    , "FilterPackets": "./components/FilterPackets.coffee"
-    , "FilterByPosition": "./components/FilterByPosition.coffee"
+  ],
+  "engines": {
+    "node": ">=0.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kenhkan/noflo-packets"
+  },
+  "dependencies": {
+    "noflo": "https://github.com/kenhkan/noflo/tarball/master",
+    "underscore": "1.4.x",
+    "underscore.string": "2.3.x"
+  },
+  "devDependencies": {
+    "coffeelint": "*",
+    "coffee-script": "1.6.x",
+    "noflo-test": "https://github.com/kenhkan/noflo-test/tarball/master"
+  },
+  "noflo": {
+    "components": {
+      "CountPackets": "./components/CountPackets.coffee",
+      "Unzip": "./components/Unzip.coffee",
+      "Defaults": "./components/Defaults.coffee",
+      "DoNotDisconnect": "./components/DoNotDisconnect.coffee",
+      "OnlyDisconnect": "./components/OnlyDisconnect.coffee",
+      "SplitPacket": "./components/SplitPacket.coffee",
+      "Range": "./components/Range.coffee",
+      "Flatten": "./components/Flatten.coffee",
+      "Compact": "./components/Compact.coffee",
+      "Zip": "./components/Zip.coffee",
+      "SendWith": "./components/SendWith.coffee",
+      "FilterPackets": "./components/FilterPackets.coffee",
+      "FilterByPosition": "./components/FilterByPosition.coffee"
+    },
+    "graphs": {
+      "MergeConnections": "./graphs/MergeConnections.fbp",
+      "First": "./graphs/First.fbp"
     }
-  , "graphs":
-    { "MergeConnections": "./graphs/MergeConnections.fbp"
-    , "First": "./graphs/First.fbp"
-    }
-  }
-, "scripts":
-  { "pretest": "./node_modules/.bin/coffeelint -r components"
-  , "test": "./node_modules/.bin/noflo-test --spec test/*.coffee"
+  },
+  "scripts": {
+    "pretest": "./node_modules/.bin/coffeelint -r components",
+    "test": "./node_modules/.bin/noflo-test --spec test/*.coffee"
   }
 }

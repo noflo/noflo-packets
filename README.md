@@ -1,4 +1,4 @@
-Packet Utilities for NoFlo [![Build Status](https://secure.travis-ci.org/kenhkan/noflo-packets.png?branch=master)](https://travis-ci.org/kenhkan/noflo-packets)
+Packet Utilities for NoFlo [![Build Status](https://secure.travis-ci.org/noflo/noflo-packets.png?branch=master)](https://travis-ci.org/noflo/noflo-packets)
 ===============================
 
 This package provides utility components to manipulate packets and

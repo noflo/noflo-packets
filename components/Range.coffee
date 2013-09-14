@@ -19,9 +19,12 @@ class Range extends noflo.Component
     @outPorts =
       out: new noflo.Port
 
-    @inPorts.start.on "data", (@start) =>
-    @inPorts.end.on "data", (@end) =>
-    @inPorts.length.on "data", (@length) =>
+    @inPorts.start.on "data", (start) =>
+      @start = parseInt start
+    @inPorts.end.on "data", (end) =>
+      @end = parseInt end
+    @inPorts.length.on "data", (length) =>
+      @length = parseInt length
 
     @inPorts.in.on "connect", =>
       @totalCount = 0

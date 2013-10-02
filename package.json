@@ -61,7 +61,8 @@
       "UniquePacket": "./components/UniquePacket.coffee",
       "GroupByPacket": "./components/GroupByPacket.coffee",
       "LastPacket": "./components/LastPacket.coffee",
-      "Counter": "./components/Counter.coffee"
+      "Counter": "./components/Counter.coffee",
+      "Replace": "./components/Replace.coffee"
     },
     "graphs": {
       "MergeConnections": "./graphs/MergeConnections.fbp",

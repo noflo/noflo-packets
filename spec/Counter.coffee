@@ -3,7 +3,7 @@ unless noflo.isBrowser()
   chai = require 'chai' unless chai
   Counter = require '../components/Counter.coffee'
 else
-  Counter = require 'noflo-adapters/components/Counter.js'
+  Counter = require 'noflo-packets/components/Counter.js'
 
 describe 'Counter component', ->
   c = null

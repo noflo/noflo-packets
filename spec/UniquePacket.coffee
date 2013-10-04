@@ -3,7 +3,7 @@ unless noflo.isBrowser()
   chai = require 'chai' unless chai
   UniquePacket = require '../components/UniquePacket.coffee'
 else
-  UniquePacket = require 'noflo-adapters/components/UniquePacket.js'
+  UniquePacket = require 'noflo-packets/components/UniquePacket.js'
 
 describe 'UniquePacket component', ->
   c = null

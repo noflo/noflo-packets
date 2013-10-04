@@ -3,7 +3,7 @@ unless noflo.isBrowser()
   chai = require 'chai' unless chai
   LastPacket = require '../components/LastPacket.coffee'
 else
-  LastPacket = require 'noflo-adapters/components/LastPacket.js'
+  LastPacket = require 'noflo-packets/components/LastPacket.js'
 
 describe 'LastPacket component', ->
   c = null

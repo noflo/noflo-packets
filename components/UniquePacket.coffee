@@ -2,13 +2,14 @@ noflo = require 'noflo'
 
 class UniquePacket extends noflo.Component
   constructor: ->
-    @seen = {}
+    @seen = []
 
     @inPorts =
-      in: new noflo.Port()
+      in: new noflo.Port 'all'
+      clear: new noflo.Port 'bang'
     @outPorts =
-      out: new noflo.Port()
-      duplicate: new noflo.Port()
+      out: new noflo.Port 'all'
+      duplicate: new noflo.Port 'all'
 
     @inPorts.in.on 'data', (data) =>
       unless @unique data
@@ -19,10 +20,12 @@ class UniquePacket extends noflo.Component
     @inPorts.in.on 'disconnect', =>
       @outPorts.out.disconnect()
 
+    @inPorts.clear.on 'data', =>
+      @seen = []
+
   unique: (packet) ->
-    stringed = JSON.stringify packet
-    return false if @seen[stringed]
-    @seen[stringed] = true
+    return false unless @seen.indexOf(packet) is -1
+    @seen.push packet
     return true
 
 exports.getComponent = -> new UniquePacket

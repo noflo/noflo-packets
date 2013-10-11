@@ -5,17 +5,17 @@ class FilterByValue extends noflo.Component
   description: "Filter packets based on their value"
 
   constructor: ->
-    @filterValue = 0
+    @filterValue = null
 
     @inPorts =
       in: new noflo.Port
-      filterValue: new noflo.Port
+      filtervalue: new noflo.Port
     @outPorts =
       lower: new noflo.Port
       higher: new noflo.Port
       equal: new noflo.Port
 
-    @inPorts.filterValue.on 'data', (data) =>
+    @inPorts.filtervalue.on 'data', (data) =>
       @filterValue = data
 
     @inPorts.in.on 'data', (data) =>
@@ -26,9 +26,14 @@ class FilterByValue extends noflo.Component
       else if data == @filterValue
         @outPorts.equal.send data
 
-    @inPorts.in.on "disconnect", =>
-      @outPorts.lower.disconnect()
-      @outPorts.higher.disconnect()
-      @outPorts.equal.disconnect()
+    @inPorts.in.on 'disconnect', =>
+      if @outPorts.lower.isConnected()
+        @outPorts.lower.disconnect()
+
+      if @outPorts.higher.isConnected()
+        @outPorts.higher.disconnect()
+
+      if @outPorts.equal.isConnected()
+        @outPorts.equal.disconnect()
 
 exports.getComponent = -> new FilterByValue

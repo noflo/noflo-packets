@@ -2,9 +2,9 @@ test = require "noflo-test"
 
 test.component("packets/FilterByValue").
   discuss("given the value, indicating the outport of the filtered value").
-    send.connect("filterValue").
-    send.data("filterValue", 1).
-    send.disconnect("filterValue").
+    send.connect("filtervalue").
+    send.data("filtervalue", 1).
+    send.disconnect("filtervalue").
   discuss("provide some data packets").
     send.connect("in").
     send.data("in", 0).

@@ -35,6 +35,7 @@
     "component.json"
   ],
   "noflo": {
+    "icon": "dropbox",
     "components": {
       "CountPackets": "components/CountPackets.coffee",
       "Unzip": "components/Unzip.coffee",

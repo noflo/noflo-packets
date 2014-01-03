@@ -43,6 +43,7 @@
     "grunt-component": "~0.1.2"
   },
   "noflo": {
+    "icon": "dropbox",
     "components": {
       "CountPackets": "./components/CountPackets.coffee",
       "Unzip": "./components/Unzip.coffee",

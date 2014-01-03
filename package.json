@@ -14,7 +14,7 @@
       "email": "henri.bergius@iki.fi"
     }
   ],
-  "version": "0.1.2",
+  "version": "0.1.3",
   "licenses": [
     {
       "type": "MIT",
@@ -58,6 +58,7 @@
       "SendWith": "./components/SendWith.coffee",
       "FilterPackets": "./components/FilterPackets.coffee",
       "FilterByPosition": "./components/FilterByPosition.coffee",
+      "FilterByValue": "./components/FilterByValue.coffee",
       "FilterPacket": "./components/FilterPacket.coffee",
       "UniquePacket": "./components/UniquePacket.coffee",
       "GroupByPacket": "./components/GroupByPacket.coffee",

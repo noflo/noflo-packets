@@ -4,6 +4,7 @@ _ = require("underscore")
 class CountPackets extends noflo.Component
 
   description: "count number of data IPs"
+  icon: 'sort-numeric-asc'
 
   constructor: ->
     @inPorts =

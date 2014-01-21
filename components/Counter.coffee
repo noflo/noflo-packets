@@ -28,7 +28,7 @@ class Counter extends noflo.Component
     @inPorts.in.on 'disconnect', =>
       @outPorts.count.send @count
       @outPorts.count.disconnect()
-      @outPorts.out.disconnect()
+      @outPorts.out.disconnect() if @outPorts.out.isAttached()
       @count = null
 
 exports.getComponent = -> new Counter

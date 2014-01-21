@@ -26,6 +26,11 @@ describe 'Counter component', ->
     it 'should have an output port', ->
       chai.expect(c.outPorts.out).to.be.an 'object'
       chai.expect(c.outPorts.count).to.be.an 'object'
+    it 'should not require the out port to be connected', ->
+      c.outPorts.out.detach out
+      ins.connect()
+      ins.send 'hello'
+      chai.expect(-> ins.disconnect()).to.not.throw Error
 
   describe 'counting', ->
     it 'single packet should return count of 1', (done) ->

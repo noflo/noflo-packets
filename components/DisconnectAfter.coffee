@@ -1,7 +1,8 @@
 noflo = require 'noflo'
 
 class DisconnectAfter extends noflo.Component
-  description: 'Pass a disconnect through after a certain number of packets has been passed'
+  description: 'Pass a disconnect through after a certain number
+  of packets has been passed'
 
   constructor: ->
     @count = 0

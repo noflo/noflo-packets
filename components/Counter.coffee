@@ -13,7 +13,7 @@ class Counter extends noflo.Component
     @inPorts =
       in: new noflo.Port
     @outPorts =
-      count: new noflo.Port
+      count: new noflo.Port 'number'
       out: new noflo.Port
      
     # When receiving data from IN port

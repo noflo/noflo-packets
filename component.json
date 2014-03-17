@@ -1,7 +1,7 @@
 {
   "name": "noflo-packets",
-  "description": "The best project ever.",
-  "version": "0.0.8",
+  "description": "Packet Utilities for NoFlo",
+  "version": "0.1.4",
   "author": "Kenneth Kan <kenhkan@gmail.com>",
   "repo": "kenhkan/packets",
   "keywords": [

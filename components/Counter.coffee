@@ -8,14 +8,20 @@ class Counter extends noflo.Component
 
   constructor: ->
     @count = null
-    
+
     # Set up ports
     @inPorts =
       in: new noflo.Port
+      immediate: new noflo.Port 'boolean'
     @outPorts =
-      count: new noflo.Port
+      count: new noflo.Port 'number'
       out: new noflo.Port
-     
+
+    #
+    @immediate = false
+    @inPorts.immediate.on 'data', (value) =>
+      @immediate = value
+
     # When receiving data from IN port
     @inPorts.in.on 'data', (data) =>
       # Prepare and increment counter
@@ -23,12 +29,18 @@ class Counter extends noflo.Component
       @count++
       # Forward the data packet to OUT
       @outPorts.out.send data if @outPorts.out.isAttached()
-      
+      @sendCount() if @immediate
+
     # When IN port disconnects we send the COUNT
     @inPorts.in.on 'disconnect', =>
-      @outPorts.count.send @count
-      @outPorts.count.disconnect()
+      @sendCount() unless @immediate
       @outPorts.out.disconnect() if @outPorts.out.isAttached()
       @count = null
+
+  sendCount: () ->
+    return unless @outPorts.count.isAttached()
+    @outPorts.count.send @count
+    @outPorts.count.disconnect()
+
 
 exports.getComponent = -> new Counter

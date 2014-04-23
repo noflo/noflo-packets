@@ -7,7 +7,8 @@
   "keywords": [],
   "dependencies": {
     "noflo/noflo": "*",
-    "component/underscore": "*"
+    "component/underscore": "*",
+    "noflo/noflo-core": "*"
   },
   "scripts": [
     "components/CountPackets.coffee",
@@ -31,7 +32,9 @@
     "components/LastPacket.coffee",
     "components/Counter.coffee",
     "index.js",
-    "components/Replace.coffee"
+    "components/Replace.coffee",
+    "graphs/First.fbp",
+    "graphs/MergeConnections.fbp"
   ],
   "json": [
     "component.json"
@@ -65,5 +68,9 @@
       "First": "graphs/First.fbp",
       "MergeConnections": "graphs/MergeConnections.fbp"
     }
-  }
+  },
+  "fbp": [
+    "graphs/First.fbp",
+    "graphs/MergeConnections.fbp"
+  ]
 }

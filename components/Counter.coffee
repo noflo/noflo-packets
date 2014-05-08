@@ -13,6 +13,7 @@ class Counter extends noflo.Component
     @inPorts =
       in: new noflo.Port
       immediate: new noflo.Port 'boolean'
+      reset: new noflo.Port 'bang'
     @outPorts =
       count: new noflo.Port 'number'
       out: new noflo.Port
@@ -30,6 +31,10 @@ class Counter extends noflo.Component
       # Forward the data packet to OUT
       @outPorts.out.send data if @outPorts.out.isAttached()
       @sendCount() if @immediate
+
+    # When receiving bang on the reset, reset COUNT to zero
+    @inPorts.reset.on 'data', (data) =>
+      @count = 0
 
     # When IN port disconnects we send the COUNT
     @inPorts.in.on 'disconnect', =>

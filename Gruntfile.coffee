@@ -88,11 +88,11 @@ module.exports = ->
     @task.run 'coffeelint'
     @task.run 'noflo_manifest'
     @task.run 'exec:test'
-    @task.run 'coffee'
     if target is 'all' or target is 'nodejs'
       @task.run 'cafemocha'
     if target is 'all' or target is 'browser'
       @task.run 'noflo_browser'
+      @task.run 'coffee'
       @task.run 'mocha_phantomjs'
 
   @registerTask 'default', ['test']

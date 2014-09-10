@@ -34,7 +34,8 @@
     "index.js",
     "components/Replace.coffee",
     "graphs/First.fbp",
-    "graphs/MergeConnections.fbp"
+    "graphs/MergeConnections.fbp",
+    "components/Map.coffee"
   ],
   "json": [
     "component.json"
@@ -55,6 +56,7 @@
       "Flatten": "components/Flatten.coffee",
       "GroupByPacket": "components/GroupByPacket.coffee",
       "LastPacket": "components/LastPacket.coffee",
+      "Map": "components/Map.coffee",
       "OnlyDisconnect": "components/OnlyDisconnect.coffee",
       "Range": "components/Range.coffee",
       "Replace": "components/Replace.coffee",

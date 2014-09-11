@@ -7,7 +7,7 @@ class Range extends noflo.Component
   connection"
 
   constructor: ->
-    @start = -Infinity
+    @_start = -Infinity
     @end = +Infinity
     @length = +Infinity
 
@@ -20,7 +20,7 @@ class Range extends noflo.Component
       out: new noflo.Port
 
     @inPorts.start.on "data", (start) =>
-      @start = parseInt start
+      @_start = parseInt start
     @inPorts.end.on "data", (end) =>
       @end = parseInt end
     @inPorts.length.on "data", (length) =>
@@ -36,7 +36,7 @@ class Range extends noflo.Component
     @inPorts.in.on "data", (data) =>
       @totalCount++
 
-      if @totalCount > @start and
+      if @totalCount > @_start and
          @totalCount < @end and
          @sentCount < @length
         @sentCount++

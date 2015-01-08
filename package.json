@@ -62,6 +62,7 @@
       "Replace": "components/Replace.coffee",
       "SendWith": "components/SendWith.coffee",
       "SplitPacket": "components/SplitPacket.coffee",
+      "StepSequencer": "components/StepSequencer.coffee",
       "UniquePacket": "components/UniquePacket.coffee",
       "Unzip": "components/Unzip.coffee",
       "Zip": "components/Zip.coffee"

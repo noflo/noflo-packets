@@ -20,15 +20,16 @@ class CountPackets extends noflo.Component
     @inPorts.in.on "begingroup", (group) =>
       @counts.push(0)
       @outPorts.out.beginGroup(group)
+      @outPorts.count.beginGroup(group)
 
     @inPorts.in.on "data", (data) =>
       @counts[@counts.length - 1]++
-      count = _.last(@counts)
       @outPorts.out.send(data)
 
     @inPorts.in.on "endgroup", (group) =>
       count = _.last(@counts)
       @outPorts.count.send(count)
+      @outPorts.count.endGroup()
       @counts.pop()
       @outPorts.out.endGroup(group)
 

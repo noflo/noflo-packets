@@ -16,11 +16,13 @@ class FilterPacket extends noflo.Component
 
     @inPorts.in.on 'begingroup', (group) =>
       @outPorts.out.beginGroup group
+      @outPorts.missed.beginGroup group
     @inPorts.in.on 'data', (data) =>
       return @filterData data if @regexps.length
       @outPorts.out.send data
     @inPorts.in.on 'endgroup', =>
       @outPorts.out.endGroup()
+      @outPorts.missed.endGroup()
     @inPorts.in.on 'disconnect', =>
       @outPorts.out.disconnect()
       @outPorts.missed.disconnect()

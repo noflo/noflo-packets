@@ -28,10 +28,11 @@ class CountPackets extends noflo.Component
 
     @inPorts.in.on "endgroup", (group) =>
       count = _.last(@counts)
+      @counts.pop()
       @outPorts.count.send(count)
       @outPorts.count.endGroup()
-      @counts.pop()
-      @outPorts.out.endGroup(group)
+      @outPorts.count.disconnect()
+      @outPorts.out.endGroup()
 
     @inPorts.in.on "disconnect", =>
       count = _.last(@counts)

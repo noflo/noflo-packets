@@ -15,12 +15,7 @@
     }
   ],
   "version": "0.1.6",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/noflo/noflo-packets/blob/master/LICENSE.md"
-    }
-  ],
+  "license": "MIT",
   "dependencies": {
     "noflo": "~0.5.22",
     "underscore": "1.8.3"

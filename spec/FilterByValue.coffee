@@ -31,7 +31,7 @@ describe 'FilterByValue component', ->
     higher = noflo.internalSocket.createSocket()
     c.outPorts.higher.attach higher
     equal = noflo.internalSocket.createSocket()
-    c.outPorts.equal.attach out
+    c.outPorts.equal.attach equal
   afterEach ->
     c.outPorts.lower.detach lower
     c.outPorts.higher.detach higher

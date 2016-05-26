@@ -14,21 +14,21 @@
     <div id="mocha"></div>
     <div id="fixtures"></div>
     <script src="../browser/packets.js"></script>
-    <script src="http://chaijs.com/chai.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
     <script src="../node_modules/mocha/mocha.js"></script>
-    <script>mocha.setup('bdd');</script>
+    <script>
+      if (window.initMochaPhantomJS) {
+        window.initMochaPhantomJS();
+      }
+      mocha.setup('bdd');
+    </script>
     <script src="./Counter.js"></script>
     <script src="./FilterPacket.js"></script>
     <script src="./LastPacket.js"></script>
     <script src="./Map.js"></script>
     <script src="./UniquePacket.js"></script>
     <script>
-      if (window.mochaPhantomJS) {
-        mochaPhantomJS.run();
-      } else {
-        mocha.checkLeaks();
-        mocha.run();
-      }
+      mocha.run();
     </script>
   </body>
 </html>

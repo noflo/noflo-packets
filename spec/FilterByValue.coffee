@@ -66,6 +66,6 @@ describe 'FilterByValue component', ->
       ins.send 0
       ins.send 1
       ins.send 2
-      ins.send 1.2
+      ins.send 1.5
       ins.send 0.5
       ins.disconnect()

@@ -46,6 +46,7 @@ describe 'CountPackets component', ->
       count.on 'data', (data) ->
         chai.expect(data).to.equal expected.length
         chai.expect(received).to.eql expected
+        done()
 
       ins.connect()
       ins.send 'a'
@@ -96,11 +97,11 @@ describe 'CountPackets component', ->
         done()
 
       ins.connect()
-      ins.beginGroup()
+      ins.beginGroup ''
       ins.send 'a'
       ins.send 'b'
       ins.endGroup()
-      ins.beginGroup()
+      ins.beginGroup ''
       ins.send 'c'
       ins.endGroup()
       ins.send 'd'

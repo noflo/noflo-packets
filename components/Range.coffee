@@ -48,4 +48,11 @@ class Range extends noflo.Component
     @inPorts.in.on "disconnect", =>
       @outPorts.out.disconnect()
 
+  shutdown: ->
+    @_start = -Infinity
+    @end = +Infinity
+    @length = +Infinity
+    @totalCount = 0
+    @sentCount = 0
+
 exports.getComponent = -> new Range

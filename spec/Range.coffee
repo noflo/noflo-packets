@@ -35,10 +35,7 @@ describe 'Range component', ->
   afterEach ->
     c.outPorts.out.detach out
     out = null
-    # Set back to defaults
-    start.send -Infinity
-    length.send +Infinity
-    end.send +Infinity
+    c.shutdown()
 
   describe 'given a starting position and a length', ->
     it 'should take the specified packets', (done) ->

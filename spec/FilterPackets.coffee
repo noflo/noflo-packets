@@ -31,14 +31,14 @@ describe 'FilterPackets component', ->
     passthru = noflo.internalSocket.createSocket()
     c.outPorts.passthru.attach passthru
     missed = noflo.internalSocket.createSocket()
-    c.outPorts.missed.attach out
+    c.outPorts.missed.attach missed
   afterEach ->
     c.outPorts.out.detach out
     c.outPorts.passthru.detach passthru
     c.outPorts.missed.detach missed
 
   describe 'given some regexp strings', ->
-    it 'should send matches to out and misssed to missed', (done) ->
+    it 'should send matches to out and missed to missed', (done) ->
       expected = [
         'out abe'
         'passthru abe'

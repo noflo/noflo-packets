@@ -30,7 +30,7 @@ describe 'Zip component', ->
   describe 'given some arrays', ->
     it 'should send them out zipped', (done) ->
       expected = [
-        'DATA [[1,"a"],[2,"b"],[3,"c"]'
+        'DATA [[1,"a"],[2,"b"],[3,"c"]]'
       ]
       received = []
 
@@ -53,7 +53,7 @@ describe 'Zip component', ->
   describe 'given some arrays with groups', ->
     it 'should send them out zipped, ignoring groups', (done) ->
       expected = [
-        'DATA [[1,"a"],[2,"b"],[3,"c"]'
+        'DATA [[1,"a"],[2,"b"],[3,"c"]]'
       ]
       received = []
 

@@ -24,7 +24,7 @@ describe 'Unzip component', ->
   beforeEach ->
     odd = noflo.internalSocket.createSocket()
     c.outPorts.odd.attach odd
-    out = noflo.internalSocket.createSocket()
+    even = noflo.internalSocket.createSocket()
     c.outPorts.even.attach even
   afterEach ->
     c.outPorts.odd.detach odd

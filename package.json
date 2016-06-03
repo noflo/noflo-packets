@@ -14,14 +14,14 @@
       "email": "henri.bergius@iki.fi"
     }
   ],
-  "version": "0.1.7",
+  "version": "0.1.8",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/noflo/noflo-packets.git"
   },
   "dependencies": {
-    "noflo": "~0.5.22",
+    "noflo": "0.x >= 0.5",
     "underscore": "~1.8.3"
   },
   "devDependencies": {

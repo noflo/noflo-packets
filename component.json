@@ -1,9 +1,9 @@
 {
   "name": "noflo-packets",
   "description": "Packet Utilities for NoFlo",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "author": "Kenneth Kan <kenhkan@gmail.com>",
-  "repo": "kenhkan/packets",
+  "repo": "noflo/noflo-packets",
   "keywords": [],
   "dependencies": {
     "noflo/noflo": "*",

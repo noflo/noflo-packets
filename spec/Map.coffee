@@ -1,9 +1,11 @@
 noflo = require 'noflo'
+
 unless noflo.isBrowser()
-  chai = require 'chai' unless chai
-  module = require '../components/Map.coffee'
+  chai = require 'chai'
+  path = require 'path'
+  baseDir = path.resolve __dirname, '../'
 else
-  module = require 'noflo-packets/components/Map.js'
+  baseDir = 'noflo-packets'
 
 describe 'Map component', ->
   c = null
@@ -11,8 +13,15 @@ describe 'Map component', ->
   map = null
   out = null
 
+  before (done) ->
+    @timeout 4000
+    loader = new noflo.ComponentLoader baseDir
+    loader.load 'packets/Map', (err, instance) ->
+      return done err if err
+      c = instance
+      done()
+
   beforeEach ->
-    c = module.getComponent()
     ins = noflo.internalSocket.createSocket()
     map = noflo.internalSocket.createSocket()
     out = noflo.internalSocket.createSocket()

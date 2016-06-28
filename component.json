@@ -36,7 +36,8 @@
     "graphs/First.fbp",
     "graphs/MergeConnections.fbp",
     "components/Map.coffee",
-    "components/WrapWithBrackets.coffee"
+    "components/WrapWithBrackets.coffee",
+    "components/StepSequencer.coffee"
   ],
   "json": [
     "component.json"

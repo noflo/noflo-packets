@@ -1,9 +1,11 @@
 noflo = require 'noflo'
+
 unless noflo.isBrowser()
-  chai = require 'chai' unless chai
-  FilterPacket = require '../components/FilterPacket.coffee'
+  chai = require 'chai'
+  path = require 'path'
+  baseDir = path.resolve __dirname, '../'
 else
-  FilterPacket = require 'noflo-packets/components/FilterPacket.js'
+  baseDir = 'noflo-packets'
 
 describe 'FilterPacket component', ->
   c = null
@@ -12,8 +14,15 @@ describe 'FilterPacket component', ->
   out = null
   missed = null
 
+  before (done) ->
+    @timeout 4000
+    loader = new noflo.ComponentLoader baseDir
+    loader.load 'packets/FilterPacket', (err, instance) ->
+      return done err if err
+      c = instance
+      done()
+
   beforeEach ->
-    c = FilterPacket.getComponent()
     ins = noflo.internalSocket.createSocket()
     regexp = noflo.internalSocket.createSocket()
     out = noflo.internalSocket.createSocket()
@@ -22,6 +31,9 @@ describe 'FilterPacket component', ->
     c.inPorts.regexp.attach regexp
     c.outPorts.out.attach out
     c.outPorts.missed.attach missed
+  afterEach ->
+    c.outPorts.out.detach out
+    c.outPorts.missed.detach missed
 
   describe 'when instantiated', ->
     it 'should have an input port', ->

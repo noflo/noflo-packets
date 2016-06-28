@@ -54,4 +54,3 @@ exports.getComponent = ->
         output.send missed: new noflo.IP 'closeBracket', packet.data
 
     output.done()
-

@@ -1,58 +1,57 @@
-noflo = require("noflo")
-_ = require("underscore")
+noflo = require 'noflo'
 
-class Range extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+    description: 'only forward a specified number of packets in a connection'
+    inPorts:
+      in:
+        datatype: 'all'
+        data: true
+      start:
+        datatype: 'all'
+        control: true
+        default: -99999999
+      end:
+        datatype: 'all'
+        control: true
+        default: 99
+      length:
+        datatype: 'all'
+        control: true
+        default: 99999999
+    outPorts:
+      out:
+        datatype: 'all'
 
-  description: "only forward a specified number of packets in a
-  connection"
+  c.process (input, output) ->
+    return unless input.hasDataStream 'in'
 
-  constructor: ->
-    @_start = -Infinity
-    @end = +Infinity
-    @length = +Infinity
+    stream = input.getDataStream 'in'
+      .filter (data) -> data?
 
-    @inPorts =
-      in: new noflo.Port
-      start: new noflo.Port
-      end: new noflo.Port
-      length: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
+    length = parseInt input.getDataStream('length')[0]
+    start = input.getDataStream('start')[0]
+    end = input.getDataStream('end')[0]
 
-    @inPorts.start.on "data", (start) =>
-      @_start = parseInt start
-    @inPorts.end.on "data", (end) =>
-      @end = parseInt end
-    @inPorts.length.on "data", (length) =>
-      @length = parseInt length
+    end = if end? then parseInt(end) else 9999999 #Infinity
+    length = if length? then parseInt(length) else 99999999 #Infinity
+    start = if start? then parseInt(start) else -99999999 #-Infinity
 
-    @inPorts.in.on "connect", =>
-      @totalCount = 0
-      @sentCount = 0
+    length = 99999999 if Number.isNaN(length)
+    start = -99999999 if Number.isNaN(start)
+    end = 99999999 if Number.isNaN(end)
 
-    @inPorts.in.on "begingroup", (group) =>
-      @outPorts.out.beginGroup(group)
+    totalCount = 0
+    sentCount = 0
 
-    @inPorts.in.on "data", (data) =>
-      @totalCount++
+    for data in stream
+      totalCount++
+      if totalCount > start and
+         totalCount < end and
+         sentCount < length
+        sentCount++
+        ip = new noflo.IP('data', data)
+        output.ports.out.sendIP ip, null, {}, null, false
 
-      if @totalCount > @_start and
-         @totalCount < @end and
-         @sentCount < @length
-        @sentCount++
-        @outPorts.out.send(data)
-
-    @inPorts.in.on "endgroup", (group) =>
-      @outPorts.out.endGroup()
-
-    @inPorts.in.on "disconnect", =>
-      @outPorts.out.disconnect()
-
-  shutdown: ->
-    @_start = -Infinity
-    @end = +Infinity
-    @length = +Infinity
-    @totalCount = 0
-    @sentCount = 0
-
-exports.getComponent = -> new Range
+    c.outPorts.out.disconnect()
+    output.done()

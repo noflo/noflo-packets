@@ -29,9 +29,8 @@ describe 'UniquePacket component', ->
 
       out.on 'data', (data) ->
         chai.expect(packets.shift()).to.deep.equal data
-      out.on 'disconnect', ->
-        chai.expect(packets.length).to.equal 0
-        done()
+        if packets.length is 0
+          done()
 
       ins.connect()
       ins.send 'one'
@@ -44,9 +43,8 @@ describe 'UniquePacket component', ->
 
       out.on 'data', (data) ->
         chai.expect(packets.shift()).to.deep.equal data
-      out.on 'disconnect', ->
-        chai.expect(packets.length).to.equal 0
-        done()
+        if packets.length is 0
+          done()
 
       ins.connect()
       ins.send 'one'

@@ -1,43 +1,57 @@
 noflo = require 'noflo'
 
-class FilterPacket extends noflo.Component
-  constructor: ->
-    @regexps = []
+exports.getComponent = ->
+  c = new noflo.Component
+    inPorts:
+      in:
+        datatype: 'all'
+        required: true
+      regexp:
+        datatype: 'all'
+    outPorts:
+      out:
+        datatype: 'all'
+      missed:
+        datatype: 'all'
 
-    @inPorts =
-      regexp: new noflo.ArrayPort()
-      in: new noflo.Port()
-    @outPorts =
-      out: new noflo.Port()
-      missed: new noflo.Port()
-
-    @inPorts.regexp.on 'data', (data) =>
-      @regexps.push data
-
-    @inPorts.in.on 'begingroup', (group) =>
-      @outPorts.out.beginGroup group
-      @outPorts.missed.beginGroup group
-    @inPorts.in.on 'data', (data) =>
-      return @filterData data if @regexps.length
-      @outPorts.out.send data
-    @inPorts.in.on 'endgroup', =>
-      @outPorts.out.endGroup()
-      @outPorts.missed.endGroup()
-    @inPorts.in.on 'disconnect', =>
-      @outPorts.out.disconnect()
-      @outPorts.missed.disconnect()
-
-  filterData: (data) ->
+  c.filterData = (data, regexps) ->
     match = false
-    for expression in @regexps
+    for expression in regexps
       regexp = new RegExp expression
       continue unless regexp.exec data
       match = true
 
     unless match
-      @outPorts.missed.send data if @outPorts.missed.isAttached()
+      c.outPorts.missed.send data
       return
 
-    @outPorts.out.send data
+    c.outPorts.out.send data
 
-exports.getComponent = -> new FilterPacket
+  c.forwardBrackets = {}
+
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
+
+    stream = input.getStream 'in'
+    data = stream.filter (ip) -> ip.type is 'data'
+    regexps = input.getStream 'regexp'
+      .filter (ip) -> ip.type is 'data'
+      .map (ip) -> new RegExp ip.data
+
+    for packet in stream
+      if packet.type is 'openBracket'
+        output.send out: new noflo.IP 'openBracket', packet.data
+        output.send missed: new noflo.IP 'openBracket', packet.data
+
+      if packet.type is 'data'
+        if regexps.length
+          c.filterData packet.data, regexps
+          continue
+        output.send out: packet.data
+
+      if packet.type is 'closeBracket'
+        output.send out: new noflo.IP 'closeBracket', packet.data
+        output.send missed: new noflo.IP 'closeBracket', packet.data
+
+    output.done()
+

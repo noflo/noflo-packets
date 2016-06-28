@@ -1,37 +1,42 @@
-noflo = require("noflo")
-_ = require("underscore")
+noflo = require 'noflo'
+_ = require 'underscore'
 
-class FilterPackets extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+    description: 'Filter packets matching
+    some RegExp strings'
+    inPorts:
+      in:
+        datatype: 'all'
+        required: true
+      regexp:
+        datatype: 'all'
+    outPorts:
+      out:
+        datatype: 'all'
+      missed:
+        datatype: 'all'
+      passthru:
+        datatype: 'all'
 
-  description: "Filter packets matching some RegExp strings"
+  c.forwardBrackets = {}
 
-  constructor: ->
-    @regexps = []
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
+    stream = input.getStream 'in'
+    data = stream.filter (ip) -> ip.type is 'data'
+    regexps = input.getStream 'regexp'
+      .filter (ip) -> ip.type is 'data'
+      .map (ip) -> new RegExp ip.data
 
-    @inPorts =
-      in: new noflo.Port
-      regexp: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
-      missed: new noflo.Port
-      passthru: new noflo.Port
-
-    @inPorts.regexp.on "connect", =>
-      @regexps = []
-    @inPorts.regexp.on "data", (regexp) =>
-      @regexps.push new RegExp regexp
-
-    @inPorts.in.on "data", (data) =>
-      if _.any @regexps, ((regexp) -> data.match regexp)
-        @outPorts.out.send data
+    for packet in data
+      if _.any regexps, ((regexp) -> packet.data.match regexp)
+        c.outPorts.out.send packet.data
       else
-        @outPorts.missed.send data
+        c.outPorts.missed.send packet.data
+      c.outPorts.passthru.send packet.data
 
-      @outPorts.passthru.send data if @outPorts.passthru.isAttached()
-
-    @inPorts.in.on "disconnect", =>
-      @outPorts.out.disconnect()
-      @outPorts.missed.disconnect()
-      @outPorts.passthru.disconnect() if @outPorts.passthru.isAttached()
-
-exports.getComponent = -> new FilterPackets
+    c.outPorts.out.disconnect()
+    c.outPorts.missed.disconnect()
+    c.outPorts.passthru.disconnect()
+    output.done()

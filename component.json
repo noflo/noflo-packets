@@ -35,7 +35,8 @@
     "components/Replace.coffee",
     "graphs/First.fbp",
     "graphs/MergeConnections.fbp",
-    "components/Map.coffee"
+    "components/Map.coffee",
+    "components/WrapWithBrackets.coffee"
   ],
   "json": [
     "component.json"
@@ -64,6 +65,7 @@
       "SplitPacket": "components/SplitPacket.coffee",
       "UniquePacket": "components/UniquePacket.coffee",
       "Unzip": "components/Unzip.coffee",
+      "WrapWithBrackets": "components/WrapWithBrackets.coffee",
       "Zip": "components/Zip.coffee"
     },
     "graphs": {

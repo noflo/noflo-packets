@@ -34,13 +34,13 @@ describe 'Zip component', ->
       ]
       received = []
 
-      out.on 'begingroup', (group) ->
-        received.push "< #{group}"
+      #out.on 'begingroup', (group) ->
+      #  received.push "< #{group}"
       out.on 'data', (data) ->
         data = JSON.stringify data if typeof data is 'object'
         received.push "DATA #{data}"
-      out.on 'endgroup', ->
-        received.push '>'
+      #out.on 'endgroup', ->
+      #  received.push '>'
       out.on 'disconnect', ->
         chai.expect(received).to.eql expected
         done()
@@ -57,13 +57,13 @@ describe 'Zip component', ->
       ]
       received = []
 
-      out.on 'begingroup', (group) ->
-        received.push "< #{group}"
+      #out.on 'begingroup', (group) ->
+      #  received.push "< #{group}"
       out.on 'data', (data) ->
         data = JSON.stringify data if typeof data is 'object'
         received.push "DATA #{data}"
-      out.on 'endgroup', ->
-        received.push '>'
+      #out.on 'endgroup', ->
+      #  received.push '>'
       out.on 'disconnect', ->
         chai.expect(received).to.eql expected
         done()

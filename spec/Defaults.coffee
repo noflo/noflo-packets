@@ -39,12 +39,12 @@ describe 'Defaults component', ->
       ]
       received = []
 
-      out.on 'begingroup', (grp) ->
-        received.push "< #{grp}"
+      #out.on 'begingroup', (grp) ->
+      #  received.push "< #{grp}"
       out.on 'data', (data) ->
         received.push "DATA #{data}"
-      out.on 'endgroup', ->
-        received.push '>'
+      #out.on 'endgroup', ->
+      #  received.push '>'
       out.on 'disconnect', ->
         chai.expect(received).to.eql expected
         done()
@@ -84,6 +84,8 @@ describe 'Defaults component', ->
       out.on 'endgroup', ->
         received.push '>'
       out.on 'disconnect', ->
+        received.shift()
+        received.pop()
         chai.expect(received).to.eql expected
         done()
 

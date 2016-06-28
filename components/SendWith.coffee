@@ -1,33 +1,37 @@
-noflo = require("noflo")
-_ = require("underscore")
+noflo = require 'noflo'
 
-class SendWith extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+    description: 'Always send the specified packets with incoming packets.'
+    inPorts:
+      in:
+        datatype: 'all'
+        required: true
+      with:
+        datatype: 'all'
+        required: true
+    outPorts:
+      out:
+        datatype: 'all'
 
-  description: "Always send the specified packets with incoming packets."
+  c.forwardBrackets = {}
 
-  constructor: ->
-    @with = []
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
+    stream = input.getStream 'in'
+    sendWith = input.getStream 'with'
+      .filter (ip) -> ip.type is 'data'
+      .map (ip) -> ip.data
 
-    @inPorts =
-      in: new noflo.Port
-      with: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
+    for packet in stream
+      if packet.type is 'openBracket'
+        output.send out: new noflo.IP 'openBracket', packet.data
 
-    @inPorts.with.on "connect", =>
-      @with = []
-    @inPorts.with.on "data", (data) =>
-      @with.push data
+      if packet.type is 'data'
+        output.send out: packet.data
 
-    @inPorts.in.on "begingroup", (group) =>
-      @outPorts.out.beginGroup group
-    @inPorts.in.on "data", (data) =>
-      @outPorts.out.send data
-    @inPorts.in.on "endgroup", (group) =>
-      @outPorts.out.endGroup()
+      if packet.type is 'closeBracket'
+        output.send out: data for data in sendWith
+        output.send out: new noflo.IP 'closeBracket', packet.data
 
-    @inPorts.in.on "disconnect", =>
-      @outPorts.out.send packet for packet in @with
-      @outPorts.out.disconnect()
-
-exports.getComponent = -> new SendWith
+    output.done()

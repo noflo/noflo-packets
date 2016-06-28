@@ -1,21 +1,31 @@
 noflo = require 'noflo'
 
-class LastPacket extends noflo.Component
-  constructor: ->
-    @packets = null
-    @inPorts =
-      in: new noflo.Port()
-    @outPorts =
-      out: new noflo.Port()
+exports.getComponent = ->
+  c = new noflo.Component
+    inPorts:
+      in:
+        datatype: 'all'
+    outPorts:
+      out:
+        datatype: 'all'
 
-    @inPorts.in.on 'connect', =>
-      @packets = []
-    @inPorts.in.on 'data', (data) =>
-      @packets.push data
-    @inPorts.in.on 'disconnect', =>
-      return if @packets.length is 0
-      @outPorts.out.send @packets.pop()
-      @outPorts.out.disconnect()
-      @packets = null
+  c.forwardBrackets = {}
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
 
-exports.getComponent = -> new LastPacket
+    stream = input.getStream 'in'
+    data = stream.filter (ip) -> ip.type is 'data'
+
+    return if data.length is 0
+
+    for packet in stream
+      if packet.type is 'openBracket'
+        output.send out: new noflo.IP 'openBracket', packet.data
+
+    output.send data.pop()
+
+    for packet in stream
+      if packet.type is 'closeBracket'
+        output.send out: new noflo.IP 'closeBracket', packet.data
+
+    output.done()

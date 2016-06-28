@@ -33,6 +33,7 @@ describe 'FilterPacket component', ->
     packets = ['hello world']
 
     out.on 'data', (data) ->
+      console.log data
       chai.expect(packets.shift()).to.deep.equal data
     out.on 'disconnect', ->
       chai.expect(packets.length).to.equal 0

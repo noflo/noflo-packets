@@ -35,12 +35,12 @@ describe 'Flatten component', ->
       ]
       received = []
 
-      out.on 'begingroup', (group) ->
-        received.push "< #{group}"
+      #out.on 'begingroup', (group) ->
+      #  received.push "< #{group}"
       out.on 'data', (data) ->
         received.push "DATA #{data}"
-      out.on 'endgroup', ->
-        received.push '>'
+      #out.on 'endgroup', ->
+      #  received.push '>'
       out.on 'disconnect', ->
         chai.expect(received).to.eql expected
         done()

@@ -1,9 +1,11 @@
 noflo = require 'noflo'
+
 unless noflo.isBrowser()
-  chai = require 'chai' unless chai
-  Counter = require '../components/Counter.coffee'
+  chai = require 'chai'
+  path = require 'path'
+  baseDir = path.resolve __dirname, '../'
 else
-  Counter = require 'noflo-packets/components/Counter.js'
+  baseDir = 'noflo-packets'
 
 describe 'Counter component', ->
   c = null
@@ -11,14 +13,24 @@ describe 'Counter component', ->
   out = null
   count = null
 
+  before (done) ->
+    @timeout 4000
+    loader = new noflo.ComponentLoader baseDir
+    loader.load 'packets/Counter', (err, instance) ->
+      return done err if err
+      c = instance
+      done()
+
   beforeEach ->
-    c = Counter.getComponent()
     ins = noflo.internalSocket.createSocket()
     out = noflo.internalSocket.createSocket()
     count = noflo.internalSocket.createSocket()
     c.inPorts.in.attach ins
     c.outPorts.out.attach out
     c.outPorts.count.attach count
+  afterEach ->
+    c.outPorts.out.detach out
+    c.outPorts.count.detach count
 
   describe 'when instantiated', ->
     it 'should have an input port', ->

@@ -52,6 +52,7 @@ exports.getComponent = ->
         sentCount++
         ip = new noflo.IP('data', data)
         output.ports.out.sendIP ip, null, {}, null, false
+        # output.sendIP 'out', ip, false
 
     c.outPorts.out.disconnect()
     output.done()

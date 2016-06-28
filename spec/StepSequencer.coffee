@@ -25,6 +25,8 @@ describe 'StepSequencer component', ->
     c.inPorts.pattern.attach pattern
     value = noflo.internalSocket.createSocket()
     c.outPorts.value.attach value
+  afterEach ->
+    c.outPorts.value.detach value
 
   describe 'when instantiated', ->
     it 'should have an input port', ->
@@ -38,11 +40,14 @@ describe 'StepSequencer component', ->
       chai.expect(c.pattern).to.have.length 0
 
   describe 'when receiving pattern', ->
-    it 'parses timestamp-values', ->
-      value.once 'data', (res) ->
-        console.log res
+    it 'parses timestamp-values', (done) ->
+      @timeout 20000
+      expect = ['5', '7']
+      value.on 'data', (res) ->
+        chai.expect(res).to.equal expect.shift()
+        return unless expect.length is 0
+        done()
       pattern.send '0,5,10,7'
-      #chai.expect(c.pattern).to.have.length 4
     it 'sends single value', (done) ->
       value.once 'data', (res) ->
         chai.expect(res).to.be.equal '5'

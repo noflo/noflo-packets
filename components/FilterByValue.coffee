@@ -27,10 +27,13 @@ exports.getComponent = ->
 
     for packet in data
       if packet.data < filterValue
-        output.send lower: packet.data
+        #output.send lower: packet.data
+        output.ports.lower.send packet.data
       else if packet.data > filterValue
-        output.send higher: packet.data
+        #output.send higher: packet.data
+        output.ports.higher.send packet.data
       else if packet.data is filterValue
-        output.send equal: packet.data
+        #output.send equal: packet.data
+        output.ports.equal.send packet.data
 
     output.done()

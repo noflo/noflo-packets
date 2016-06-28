@@ -7,7 +7,7 @@ unless noflo.isBrowser()
 else
   baseDir = 'noflo-packets'
 
-describe.only 'Replace component', ->
+describe 'Replace component', ->
   c = null
   ins = null
   match = null

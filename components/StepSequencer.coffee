@@ -34,6 +34,7 @@ exports.getComponent = ->
   c.process (input, output) ->
     return unless input.has 'pattern'
     pattern = input.getData 'pattern'
+
     config =
       ix: 0
       pattern: []
@@ -46,8 +47,7 @@ exports.getComponent = ->
     parts = pattern.split ','
     return unless parts.length > 0
 
-    c.outPorts.value.connect()
     config.pattern = parts
     setTimeout ->
       c.sendNext config
-    , pattern[config.ix]
+    , config.pattern[config.ix]

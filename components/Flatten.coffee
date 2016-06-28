@@ -38,8 +38,6 @@ exports.getComponent = ->
     _.compact _.filter _.keys(node), (key) -> isNaN parseInt key
 
   c.flush = (node) ->
-    console.log node
-
     for packet in node
       c.outPorts.out.send packet
 

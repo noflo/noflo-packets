@@ -18,6 +18,7 @@ exports.getComponent = ->
       c.outPorts.out.send(defaults[count])
       count++
 
+  # @TODO: fix
   c.forwardBrackets =
     default: 'out'
 

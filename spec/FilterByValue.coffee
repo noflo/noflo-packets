@@ -49,21 +49,16 @@ describe 'FilterByValue component', ->
       received = []
 
       lower.on 'data', (data) ->
-        console.log 'lower'
         received.push "lower #{data}"
-
         return unless expected.length is received.length
         chai.expect(received).to.eql expected
         done()
-
       higher.on 'data', (data) ->
-        console.log 'higher'
         received.push "higher #{data}"
         return unless expected.length is received.length
         chai.expect(received).to.eql expected
         done()
       equal.on 'data', (data) ->
-        console.log 'equal...'
         received.push "equal #{data}"
         return unless expected.length is received.length
         chai.expect(received).to.eql expected

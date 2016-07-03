@@ -1,54 +1,51 @@
 noflo = require 'noflo'
 
-class Map extends noflo.Component
-  description: 'Replace packets through a map. Data that is not in the map is
-  replace with the default.'
-
-  constructor: ->
-    @map = {}
-    @def = null
-    
-    @inPorts = new noflo.InPorts
+exports.getComponent = ->
+  c = new noflo.Component
+    description: 'Replace packets through a map. Data that is not in the map is
+    replace with the default.'
+    inPorts:
       data:
         datatype: 'all'
         description: 'Data to be used as a key.'
       map:
         datatype: 'all'
         description: 'A map with replacement values'
-      def:
+        required: true
+      default:
         datatype: 'all'
         description: 'A default value to return if the key is not in the map.
         If unset return the input.'
-
-    @outPorts = new noflo.OutPorts
+        control: true
+    outPorts:
       data:
         datatype: 'all'
         description: 'The content of map[data].'
+        required: false
 
-    @inPorts.data.on 'data', (data) =>
-      if data of @map
-        @outPorts.data.send @map[data]
-      else
-        if @def
-          @outPorts.data.send @def
-        else
-          @outPorts.data.send data
-  
-    @inPorts.data.on 'disconnect', =>
-      @outPorts.data.disconnect()
+  c.forwardBrackets =
+    data: ['data']
+    map: ['data']
 
-    @inPorts.map.on 'data', (map) =>
-      if typeof map is 'object'
-        @map = map
-        return
+  c.process (input, output) ->
+    return unless input.hasStream 'data'
+    data = input.getStream('data')[0].data
+    map = input.getStream('map')[0].data
+    def = input.getData 'default'
+
+    unless typeof map is 'object'
       for mapPart in mapParts = map.split ','
         mapEntry = mapPart.split ':'
         if mapEntry[0] and  mapEntry[1]
-          @map[mapEntry[0].trim()] = mapEntry[1].trim()
+          map[mapEntry[0].trim()] = mapEntry[1].trim()
 
-    @inPorts.def.on 'data', (def) =>
-      @def = def
+    if data of map
+      c.outPorts.data.send map[data]
+    else
+      if def
+        c.outPorts.data.send def
+      else
+        c.outPorts.data.send data
 
-
-exports.getComponent = -> new Map()
-
+    output.ports.data.disconnect()
+    output.done()

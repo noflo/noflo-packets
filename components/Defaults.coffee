@@ -1,52 +1,53 @@
-noflo = require("noflo")
-_ = require("underscore")
+noflo = require 'noflo'
 
-class Defaults extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+    description: 'if incoming is short of the length of the default
+    packets, send the default packets.'
+    inPorts:
+      in:
+        datatype: 'all'
+      default:
+        datatype: 'all'
+    outPorts:
+      out:
+        datatype: 'all'
 
-  description: "if incoming is short of the length of the default
-  packets, send the default packets."
-
-  constructor: ->
-    @defaults = []
-
-    @inPorts =
-      in: new noflo.Port
-      default: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
-
-    @inPorts.default.on "connect", =>
-      @defaults = []
-    @inPorts.default.on "data", (data) =>
-      @defaults.push(data)
-
-    @inPorts.in.on "connect", =>
-      @counts = [0]
-
-    @inPorts.in.on "begingroup", (group) =>
-      @counts.push(0)
-      @outPorts.out.beginGroup(group)
-
-    @inPorts.in.on "data", (data) =>
-      count = _.last(@counts)
-      data ?= @defaults[count]
-
-      @outPorts.out.send(data)
-
-      @counts[@counts.length - 1]++
-
-    @inPorts.in.on "endgroup", (group) =>
-      @padPackets(_.last(@counts))
-      @counts.pop()
-      @outPorts.out.endGroup()
-
-    @inPorts.in.on "disconnect", =>
-      @padPackets(@counts[0])
-      @outPorts.out.disconnect()
-
-  padPackets: (count) ->
-    while count < @defaults.length
-      @outPorts.out.send(@defaults[count])
+  c.padPackets = (count, defaults) ->
+    while count < defaults.length
+      c.outPorts.out.send(defaults[count])
       count++
- 
-exports.getComponent = -> new Defaults
+
+  # @TODO: fix
+  c.forwardBrackets =
+    default: 'out'
+
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
+    return unless input.hasStream 'default'
+
+    stream = input.getStream 'in'
+    defaults = input.getStream('default')
+      .filter (ip) -> ip.type is 'data'
+      .map (ip) -> ip.data
+    counts = [0]
+
+    for packet in stream
+      if packet.type is 'openBracket'
+        counts.push(0)
+        c.outPorts.out.beginGroup(packet.data)
+
+      if packet.type is 'data'
+        unless packet.data?
+          packet.data = defaults[counts[counts.length - 1]]
+
+        c.outPorts.out.send(packet.data)
+        counts[counts.length - 1]++
+
+      if packet.type is 'closeBracket'
+        c.padPackets(counts[counts.length - 1], defaults)
+        counts.pop()
+        c.outPorts.out.endGroup()
+
+    c.outPorts.out.disconnect()
+    output.done()

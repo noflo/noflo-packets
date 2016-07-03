@@ -27,6 +27,7 @@ describe 'Compact component', ->
     c.outPorts.out.detach out
 
   describe 'when receiving a mixed stream of packets', ->
+    @timeout 30000
     it 'should only return the "proper" ones', (done) ->
       expected = [
         'DATA 1'
@@ -35,16 +36,14 @@ describe 'Compact component', ->
       ]
       received = []
 
-      out.on 'begingroup', (grp) ->
-        received.push "< #{grp}"
       out.on 'data', (data) ->
         received.push "DATA #{data}"
-      out.on 'endgroup', ->
-        received.push '>'
       out.on 'disconnect', ->
         chai.expect(received).to.eql expected
         done()
 
+      #ins.post new noflo.IP 'openBracket'
+      #ins.post new noflo.IP 'openBracket'
       ins.send []
       ins.send 1
       ins.send ''
@@ -52,4 +51,7 @@ describe 'Compact component', ->
       ins.send null
       ins.send false
       ins.send {}
+      #ins.post new noflo.IP 'closeBracket'
+      #ins.post new noflo.IP 'closeBracket'
+      ##ins.post new noflo.IP 'closeBracket'
       ins.disconnect()

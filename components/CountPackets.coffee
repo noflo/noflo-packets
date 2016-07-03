@@ -1,42 +1,41 @@
-noflo = require("noflo")
-_ = require("underscore")
+noflo = require 'noflo'
 
-class CountPackets extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+    description: 'count number of data IPs'
+    icon: 'sort-numeric-asc'
+    inPorts:
+      in:
+        datatype: 'all'
+    outPorts:
+      out:
+        datatype: 'all'
+      count:
+        datatype: 'all'
 
-  description: "count number of data IPs"
-  icon: 'sort-numeric-asc'
+  c.forwardBrackets = {}
 
-  constructor: ->
-    @inPorts =
-      in: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
-      count: new noflo.Port
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
 
-    @inPorts.in.on "connect", =>
-      @counts = [0]
-      count = _.last(@counts)
+    stream = input.getStream 'in'
+    count = 0
+    connect = true
+    for packet in stream
+      if connect
+        connect = false
+        continue
 
-    @inPorts.in.on "begingroup", (group) =>
-      @counts.push(0)
-      @outPorts.out.beginGroup(group)
-      @outPorts.count.beginGroup(group)
+      if packet.type is 'openBracket'
+        output.send out: new noflo.IP 'openBracket', packet.data
+        output.send count: new noflo.IP 'openBracket', packet.data
+      if packet.type is 'data'
+        count++
+        output.send out: packet.data
+      if packet.type is 'closeBracket'
+        output.send count: count
+        output.send count: new noflo.IP 'closeBracket', packet.data
+        output.send out: new noflo.IP 'closeBracket', packet.data
+        count = 0
 
-    @inPorts.in.on "data", (data) =>
-      @counts[@counts.length - 1]++
-      @outPorts.out.send(data)
-
-    @inPorts.in.on "endgroup", (group) =>
-      count = _.last(@counts)
-      @outPorts.count.send(count)
-      @outPorts.count.endGroup()
-      @counts.pop()
-      @outPorts.out.endGroup(group)
-
-    @inPorts.in.on "disconnect", =>
-      count = _.last(@counts)
-      @outPorts.count.send(count)
-      @outPorts.count.disconnect()
-      @outPorts.out.disconnect()
-
-exports.getComponent = -> new CountPackets
+    output.done()

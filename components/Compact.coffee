@@ -1,30 +1,63 @@
-noflo = require("noflo")
-_ = require("underscore")
+noflo = require 'noflo'
 
-class Compact extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+    description: 'Remove null'
+    inPorts:
+      in:
+        datatype: 'all'
+        data: true
+    outPorts:
+      out:
+        datatype: 'all'
 
-  description: "Remove null"
+  c.process (input, output) ->
+    return unless input.hasDataStream 'in'
+    stream = input.getDataStream 'in'
 
-  constructor: ->
-    @inPorts =
-      in: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
+    for data in stream
+      continue unless data?
+      continue if data.length is 0
+      if typeof(data) is 'object' and Object.keys(data).length is 0
+        continue
 
-    @inPorts.in.on "begingroup", (group) =>
-      @outPorts.out.beginGroup(group)
+      output.ports.out.sendIP new noflo.IP('data', data), null, {}, null, false
+      #output.sendIP 'out', data # cannot use false on autoconnect
 
-    @inPorts.in.on "data", (data) =>
-      return unless data?
-      return if data.length is 0
-      return if _.isObject(data) and _.isEmpty(data)
+    output.done()
 
-      @outPorts.out.send(data)
+    ###
+    #
+    # Without dataStream
+    #
+    ##
+    return unless input.hasStream 'in'
 
-    @inPorts.in.on "endgroup", (group) =>
-      @outPorts.out.endGroup()
+    stream = input.getStream 'in'
 
-    @inPorts.in.on "disconnect", =>
-      @outPorts.out.disconnect()
+    # deal with the silly connect
+    #if stream[0].type is 'openBracket' and stream[1].type is 'openBracket'
+    #  delete stream[0]
 
-exports.getComponent = -> new Compact
+    openBracket = (stream.filter (ip) -> ip.type is 'openBracket')[0]
+    closeBracket = (stream.filter (ip) -> ip.type is 'closeBracket')[0]
+
+    output.send new noflo.IP 'openBracket', openBracket.data
+
+    for packet in stream
+      continue unless packet.type is 'data'
+
+      console.log 'is data'
+      continue unless packet.data?
+      continue if packet.data.length is 0
+      if typeof(packet.data) is 'object' and
+      Object.keys(packet.data).length is 0
+        console.log 'has no keys eh'
+        continue
+
+      output.send packet.data
+
+    output.send new noflo.IP 'closeBracket', closeBracket.data
+
+    output.done()
+    ###

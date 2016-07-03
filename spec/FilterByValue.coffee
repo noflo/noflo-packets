@@ -50,11 +50,17 @@ describe 'FilterByValue component', ->
 
       lower.on 'data', (data) ->
         received.push "lower #{data}"
+        return unless expected.length is received.length
+        chai.expect(received).to.eql expected
+        done()
       higher.on 'data', (data) ->
         received.push "higher #{data}"
+        return unless expected.length is received.length
+        chai.expect(received).to.eql expected
+        done()
       equal.on 'data', (data) ->
         received.push "equal #{data}"
-      lower.on 'disconnect', ->
+        return unless expected.length is received.length
         chai.expect(received).to.eql expected
         done()
 

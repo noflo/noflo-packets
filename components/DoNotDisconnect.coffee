@@ -1,22 +1,22 @@
 noflo = require("noflo")
 
-class DoNotDisconnect extends noflo.Component
+# this is a generator
+exports.getComponent = ->
+  component = new noflo.Component
 
-  description: "forwards everything but never disconnect"
+  component.description = "forwards everything but never disconnect"
 
-  constructor: ->
-    @inPorts =
-      in: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
+  component.inPorts.add 'in', datatype: 'all', (event, payload) ->
+    switch event
+      when 'begingroup'
+        component.outPorts.out.beginGroup(payload)
 
-    @inPorts.in.on "begingroup", (group) =>
-      @outPorts.out.beginGroup(group)
+      when 'data'
+        component.outPorts.out.send(payload)
 
-    @inPorts.in.on "data", (data) =>
-      @outPorts.out.send(data)
+      when 'endgroup'
+        component.outPorts.out.endGroup()
+  component.outPorts.add 'out', datatype: 'all'
 
-    @inPorts.in.on "endgroup", (group) =>
-      @outPorts.out.endGroup()
 
-exports.getComponent = -> new DoNotDisconnect
+  return component

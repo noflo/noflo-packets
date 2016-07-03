@@ -1,30 +1,38 @@
-noflo = require("noflo")
-_ = require("underscore")
+noflo = require 'noflo'
 
-class FilterByPosition extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+    description: 'Filter packets based on their positions'
+    inPorts:
+      in:
+        datatype: 'all'
+      filter:
+        datatype: 'all'
+    outPorts:
+      out:
+        datatype: 'all'
 
-  description: "Filter packets based on their positions"
+  c.forwardBrackets = {}
 
-  constructor: ->
-    @filters = []
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
 
-    @inPorts =
-      in: new noflo.Port
-      filter: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
+    count = 0
+    stream = input.getStream 'in'
+    filters = input.getStream 'filter'
+      .filter (ip) -> ip.type is 'data'
+      .map (ip) -> ip.data
 
-    @inPorts.filter.on "connect", =>
-      @filters = []
-    @inPorts.filter.on "data", (filter) =>
-      @filters.push filter
+    for packet in stream
+      if packet.type is 'openBracket'
+        output.send out: new noflo.IP 'openBracket', packet.data
 
-    @inPorts.in.on "connect", =>
-      @count = 0
-    @inPorts.in.on "data", (data) =>
-      @outPorts.out.send data if @filters[@count]
-      @count++
-    @inPorts.in.on "disconnect", =>
-      @outPorts.out.disconnect()
+      if packet.type is 'data'
+        if filters[count]
+          output.send packet.data
+        count++
 
-exports.getComponent = -> new FilterByPosition
+      if packet.type is 'closeBracket'
+        output.send out: new noflo.IP 'closeBracket', packet.data
+
+    output.done()

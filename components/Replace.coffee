@@ -1,39 +1,27 @@
 noflo = require 'noflo'
 
-class Replace extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+    description: 'Replace incoming packets with something else if they match
+    certain packets'
+    inPorts:
+      in:
+        datatype: 'all'
+      replace:
+        datatype: 'all'
+      match:
+        datatype: 'all'
+    outPorts:
+      out:
+        datatype: 'all'
 
-  description: 'Replace incoming packets with something else if they match
-  certain packets'
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
+    stream = input.getDataStream 'in'
+    matches = input.getDataStream 'match'
+    replacements = input.getDataStream 'replace'
 
-  constructor: ->
-    @inPorts =
-      in: new noflo.Port 'any'
-      match: new noflo.Port 'any'
-      replace: new noflo.Port 'any'
-    @outPorts =
-      out: new noflo.Port 'any'
-
-    @inPorts.match.on 'connect', =>
-      @matches = []
-    @inPorts.match.on 'data', (match) =>
-      @matches.push match
-
-    @inPorts.replace.on 'connect', =>
-      @replacements = []
-    @inPorts.replace.on 'data', (replacement) =>
-      @replacements.push replacement
-
-    @inPorts.in.on 'begingroup', (group) =>
-      @outPorts.out.beginGroup group
-    @inPorts.in.on 'endgroup', =>
-      @outPorts.out.endGroup()
-    @inPorts.in.on 'disconnect', =>
-      @outPorts.out.disconnect()
-
-    @inPorts.in.on 'data', (data) =>
-      index = @matches.indexOf data
-
+    for data in stream
+      index = matches.indexOf data
       # Forward data as-is if no match; otherwise, send the replacement
-      @outPorts.out.send if index > -1 then @replacements[index] else data
-
-exports.getComponent = -> new Replace
+      output.ports.out.send if index > -1 then replacements[index] else data

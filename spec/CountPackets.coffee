@@ -89,12 +89,16 @@ describe 'CountPackets component', ->
         receivedCount.push "< #{group}"
       count.on 'data', (data) ->
         receivedCount.push "DATA #{data}"
-      count.on 'endgroup', ->
-        receivedCount.push '>'
-      count.on 'disconnect', ->
+
+        return unless receivedCount.length is expectedCount.length
+        return unless receivedOut.length is expectedOut.length
+
         chai.expect(receivedCount).to.eql expectedCount
         chai.expect(receivedOut).to.eql expectedOut
         done()
+
+      count.on 'endgroup', ->
+        receivedCount.push '>'
 
       ins.connect()
       ins.beginGroup ''

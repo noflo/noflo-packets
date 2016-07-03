@@ -30,25 +30,21 @@ describe 'SplitPacket component', ->
   describe 'given some IPs', ->
     it 'should send each IP with its own connection', (done) ->
       expected = [
-        'CONN'
         'DATA a'
-        'DISC'
-        'CONN'
         'DATA b'
-        'DISC'
       ]
       received = []
 
-      out.on 'connect', ->
-        received.push 'CONN'
-      out.on 'begingroup', (group) ->
-        received.push "< #{group}"
+      #out.on 'connect', ->
+      #  received.push 'CONN'
+      #out.on 'begingroup', (group) ->
+      #  received.push "< #{group}"
       out.on 'data', (data) ->
         received.push "DATA #{data}"
-      out.on 'endgroup', ->
-        received.push '>'
+      #out.on 'endgroup', ->
+      #  received.push '>'
       out.on 'disconnect', ->
-        received.push 'DISC'
+        #received.push 'DISC'
         return unless received.length is expected.length
         chai.expect(received).to.eql expected
         done()
@@ -61,29 +57,27 @@ describe 'SplitPacket component', ->
   describe 'given some grouped IPs', ->
     it 'should send only groups enclosing a particular IP', (done) ->
       expected = [
-        'CONN'
         '< x'
         'DATA a'
         '>'
-        'DISC'
-        'CONN'
         '< y'
         'DATA b'
         '>'
-        'DISC'
       ]
       received = []
 
       out.on 'connect', ->
-        received.push 'CONN'
+        #received.push 'CONN'
       out.on 'begingroup', (group) ->
+        return unless group?
         received.push "< #{group}"
       out.on 'data', (data) ->
         received.push "DATA #{data}"
-      out.on 'endgroup', ->
+      out.on 'endgroup', (group) ->
+        return unless group?
         received.push '>'
       out.on 'disconnect', ->
-        received.push 'DISC'
+        #received.push 'DISC'
         return unless received.length is expected.length
         chai.expect(received).to.eql expected
         done()

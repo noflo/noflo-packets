@@ -1,17 +1,17 @@
-noflo = require("noflo")
+noflo = require 'noflo'
 
-class OnlyDisconnect extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+    description: 'the inverse of DoNotDisconnect'
+    inPorts:
+      in:
+        datatype: 'all'
+    outPorts:
+      out:
+        datatype: 'all'
 
-  description: "the inverse of DoNotDisconnect"
-
-  constructor: ->
-    @inPorts =
-      in: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
-
-    @inPorts.in.on "disconnect", =>
-      @outPorts.out.connect()
-      @outPorts.out.disconnect()
-
-exports.getComponent = -> new OnlyDisconnect
+  c.forwardBrackets = {}
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
+    output.send out: new noflo.IP 'closeBracket'
+    output.done()

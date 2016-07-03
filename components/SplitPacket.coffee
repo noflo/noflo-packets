@@ -1,30 +1,31 @@
-noflo = require("noflo")
-_ = require("underscore")
+noflo = require 'noflo'
 
-class SplitPacket extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+    description: 'splits each incoming packet into its own connection'
+    inPorts:
+      in:
+        datatype: 'all'
+    outPorts:
+      out:
+        datatype: 'all'
 
-  description: "splits each incoming packet into its own connection"
+  c.forwardBrackets = {}
 
-  constructor: ->
-    @inPorts =
-      in: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
+    stream = input.getStream 'in'
+    data = stream.filter (ip) -> ip.type is 'data'
+    openBrackets = stream.filter (ip) -> ip.type is 'openBracket'
+    closeBrackets = stream.filter (ip) -> ip.type is 'closeBracket'
 
-    @inPorts.in.on "connect", =>
-      @groups = []
+    if openBrackets[0]?.data is null
+      openBrackets.shift()
 
-    @inPorts.in.on "begingroup", (group) =>
-      @groups.push(group)
+    for packet, index in data
+      openBracket = (openBrackets.shift())?.data or null
+      output.send out: new noflo.IP 'openBracket', openBracket
+      output.send out: packet.data
+      output.send out: new noflo.IP 'closeBracket', openBracket
 
-    @inPorts.in.on "data", (data) =>
-      @outPorts.out.connect()
-      @outPorts.out.beginGroup(group) for group in @groups
-      @outPorts.out.send(data)
-      @outPorts.out.endGroup() for group in @groups
-      @outPorts.out.disconnect()
-
-    @inPorts.in.on "endgroup", (group) =>
-      @groups.pop()
-
-exports.getComponent = -> new SplitPacket
+    output.done()

@@ -1,26 +1,27 @@
 noflo = require 'noflo'
 
-class GroupByPacket extends noflo.Component
-  constructor: ->
-    @packets = 0
+exports.getComponent = ->
+  c = new noflo.Component
+    inPorts:
+      in:
+        datatype: 'all'
+    outPorts:
+      out:
+        datatype: 'all'
 
-    @inPorts =
-      in: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
+  c.process (input, output) ->
+    packets = 0
+    stream = input.getStream 'in'
 
-    @inPorts.in.on 'begingroup', (group) =>
-      @outPorts.out.beginGroup group
-      @packets = 0
-    @inPorts.in.on 'data', (data) =>
-      @outPorts.out.beginGroup @packets
-      @outPorts.out.send data
-      @outPorts.out.endGroup()
-      @packets++
-    @inPorts.in.on 'endgroup', =>
-      @outPorts.out.endGroup()
-    @inPorts.in.on 'disconnect', =>
-      @packets = 0
-      @outPorts.out.disconnect()
+    for packet in stream
+      if packet.type is 'openBracket'
+        output.send out: new noflo.IP 'openBracket', packets++
 
-exports.getComponent = -> new GroupByPacket
+      if packet.type is 'data'
+        output.send out: packet.data
+        packets++
+
+      if packet.type is 'closeBracket'
+        output.send out: new noflo.IP 'closeBracket', packet.data
+
+    output.done()

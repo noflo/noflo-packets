@@ -34,8 +34,6 @@ describe 'Range component', ->
     c.outPorts.out.attach out
   afterEach ->
     c.outPorts.out.detach out
-    out = null
-    c.shutdown()
 
   describe 'given a starting position and a length', ->
     it 'should take the specified packets', (done) ->
@@ -45,14 +43,15 @@ describe 'Range component', ->
       ]
       received = []
 
-      out.on 'begingroup', (group) ->
-        received.push "< #{group}"
+      #out.on 'begingroup', (group) ->
+      #  received.push "< #{group}"
       out.on 'data', (data) ->
         data = JSON.stringify data if typeof data is 'object'
         received.push "DATA #{data}"
-      out.on 'endgroup', ->
-        received.push '>'
+      #out.on 'endgroup', ->
+      #  received.push '>'
       out.on 'disconnect', ->
+        return unless received.length is expected.length
         chai.expect(received).to.eql expected
         done()
 
@@ -79,14 +78,15 @@ describe 'Range component', ->
       ]
       received = []
 
-      out.on 'begingroup', (group) ->
-        received.push "< #{group}"
+      #out.on 'begingroup', (group) ->
+      #  received.push "< #{group}"
       out.on 'data', (data) ->
         data = JSON.stringify data if typeof data is 'object'
         received.push "DATA #{data}"
-      out.on 'endgroup', ->
-        received.push '>'
+      #out.on 'endgroup', ->
+      #  received.push '>'
       out.on 'disconnect', ->
+        return unless received.length is expected.length
         chai.expect(received).to.eql expected
         done()
 
@@ -111,14 +111,16 @@ describe 'Range component', ->
       ]
       received = []
 
-      out.on 'begingroup', (group) ->
-        received.push "< #{group}"
+      #out.on 'begingroup', (group) ->
+      #  received.push "< #{group}"
       out.on 'data', (data) ->
         data = JSON.stringify data if typeof data is 'object'
         received.push "DATA #{data}"
-      out.on 'endgroup', ->
-        received.push '>'
+      #out.on 'endgroup', ->
+      #  received.push '>'
       out.on 'disconnect', ->
+        return unless received.length is expected.length
+
         chai.expect(received).to.eql expected
         done()
 
@@ -141,14 +143,15 @@ describe 'Range component', ->
       ]
       received = []
 
-      out.on 'begingroup', (group) ->
-        received.push "< #{group}"
+      #out.on 'begingroup', (group) ->
+      #  received.push "< #{group}"
       out.on 'data', (data) ->
         data = JSON.stringify data if typeof data is 'object'
         received.push "DATA #{data}"
-      out.on 'endgroup', ->
-        received.push '>'
+      #out.on 'endgroup', ->
+      #  received.push '>'
       out.on 'disconnect', ->
+        return unless received.length is expected.length
         chai.expect(received).to.eql expected
         done()
 
@@ -171,14 +174,15 @@ describe 'Range component', ->
       ]
       received = []
 
-      out.on 'begingroup', (group) ->
-        received.push "< #{group}"
+      #out.on 'begingroup', (group) ->
+      #  received.push "< #{group}"
       out.on 'data', (data) ->
         data = JSON.stringify data if typeof data is 'object'
         received.push "DATA #{data}"
-      out.on 'endgroup', ->
-        received.push '>'
+      #out.on 'endgroup', ->
+      #  received.push '>'
       out.on 'disconnect', ->
+        return unless received.length is expected.length
         chai.expect(received).to.eql expected
         done()
 

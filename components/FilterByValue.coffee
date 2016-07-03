@@ -1,39 +1,50 @@
-noflo = require("noflo")
+noflo = require 'noflo'
 
-class FilterByValue extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+    description: 'Filter packets based on their value'
+    inPorts:
+      in:
+        datatype: 'all'
+      filtervalue:
+        datatype: 'all'
+        control: true
+    outPorts:
+      out:
+        datatype: 'all'
+      lower:
+        datatype: 'all'
+      higher:
+        datatype: 'all'
+      equal:
+        datatype: 'all'
 
-  description: "Filter packets based on their value"
+  #
+  #  with autoordering, output is:
+  # ['lower 0', 'lower 0.5', 'equal 1', 'higher 2', 'higher 1.5' ]
+  #
+  # with autoordering, output is:
+  # [ 'lower 0', 'equal 1', 'higher 2', 'higher 1.5', 'lower 0.5' ]
+  #
+  # this is only because we are using output.send, but if we use direct port
+  # access such as `output.ports.lower.send` instead of
+  # `output.send lower:` autoOrdering does not need to be false
+  #
+  c.autoOrdering = false
 
-  constructor: ->
-    @filterValue = null
+  c.forwardBrackets = {}
 
-    @inPorts =
-      in: new noflo.Port
-      filtervalue: new noflo.Port
-    @outPorts =
-      lower: new noflo.Port
-      higher: new noflo.Port
-      equal: new noflo.Port
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
+    data = input.getStream('in').filter (ip) -> ip.type is 'data'
+    filterValue = (input.getStream('filtervalue').map (ip) -> ip.data)[0]
 
-    @inPorts.filtervalue.on 'data', (data) =>
-      @filterValue = data
+    for packet in data
+      if packet.data < filterValue
+        output.send lower: packet.data
+      else if packet.data > filterValue
+        output.send higher: packet.data
+      else if packet.data is filterValue
+        output.send equal: packet.data
 
-    @inPorts.in.on 'data', (data) =>
-      if data < @filterValue
-        @outPorts.lower.send data
-      else if data > @filterValue
-        @outPorts.higher.send data
-      else if data == @filterValue
-        @outPorts.equal.send data
-
-    @inPorts.in.on 'disconnect', =>
-      if @outPorts.lower.isConnected()
-        @outPorts.lower.disconnect()
-
-      if @outPorts.higher.isConnected()
-        @outPorts.higher.disconnect()
-
-      if @outPorts.equal.isConnected()
-        @outPorts.equal.disconnect()
-
-exports.getComponent = -> new FilterByValue
+    output.done()

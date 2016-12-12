@@ -44,8 +44,8 @@
     "icon": "dropbox",
     "components": {
       "Compact": "components/Compact.coffee",
-      "CountPackets": "components/CountPackets.coffee",
       "Counter": "components/Counter.coffee",
+      "CountPackets": "components/CountPackets.coffee",
       "Defaults": "components/Defaults.coffee",
       "DisconnectAfter": "components/DisconnectAfter.coffee",
       "DoNotDisconnect": "components/DoNotDisconnect.coffee",

@@ -26,16 +26,19 @@ describe 'Defaults component', ->
   beforeEach ->
     out = noflo.internalSocket.createSocket()
     c.outPorts.out.attach out
-  afterEach ->
+  afterEach (done) ->
     c.outPorts.out.detach out
+    c.tearDown done
 
   describe 'with some defaults', ->
     it 'should get defaults filled in in place of missing values', (done) ->
       expected = [
+        '< 1'
         'DATA x'
         'DATA b'
         'DATA c'
         'DATA d'
+        '>'
       ]
       received = []
 
@@ -57,13 +60,16 @@ describe 'Defaults component', ->
       defaults.disconnect()
 
       ins.connect()
+      ins.beginGroup 1
       ins.send 'x'
       ins.send null
+      ins.endGroup()
       ins.disconnect()
 
   describe 'with some defaults and grouped IPs', ->
     it 'should get defaults filled in for each group level', (done) ->
       expected = [
+        '< 1'
         '< group'
         'DATA x'
         'DATA b'
@@ -74,6 +80,7 @@ describe 'Defaults component', ->
         'DATA b'
         'DATA c'
         'DATA d'
+        '>'
       ]
       received = []
 
@@ -95,8 +102,10 @@ describe 'Defaults component', ->
       defaults.disconnect()
 
       ins.connect()
+      ins.beginGroup '1'
       ins.beginGroup 'group'
       ins.send 'x'
       ins.endGroup()
       ins.send 'y'
+      ins.endGroup()
       ins.disconnect()

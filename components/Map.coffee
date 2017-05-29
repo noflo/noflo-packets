@@ -1,54 +1,51 @@
 noflo = require 'noflo'
 
-class Map extends noflo.Component
-  description: 'Replace packets through a map. Data that is not in the map is
+prepareMap = (orig) ->
+  if typeof orig is 'object'
+    return orig
+  map = {}
+  for mapPart in mapParts = orig.split ','
+    mapEntry = mapPart.split ':'
+    if mapEntry[0] and  mapEntry[1]
+      map[mapEntry[0].trim()] = mapEntry[1].trim()
+  return map
+
+exports.getComponent = ->
+  c = new noflo.Component
+  c.icon = 'table'
+  c.description = 'Replace packets through a map. Data that is not in the map is
   replace with the default.'
+  c.inPorts.add 'data',
+    datatype: 'all'
+    description: 'Data to be used as a key.'
+  c.inPorts.add 'map',
+    datatype: 'all'
+    description: 'A map with replacement values'
+    control: true
+    required: true
+  c.inPorts.add 'def',
+    datatype: 'all'
+    description: 'A default value to return if the key is not in the map.
+    If unset return the input.'
+    control: true
+  c.outPorts.add 'data',
+    datatype: 'all'
+    description: 'The content of map[data].'
+  c.forwardBrackets =
+    data: ['data']
 
-  constructor: ->
-    @map = {}
-    @def = null
-    
-    @inPorts = new noflo.InPorts
-      data:
-        datatype: 'all'
-        description: 'Data to be used as a key.'
-      map:
-        datatype: 'all'
-        description: 'A map with replacement values'
-      def:
-        datatype: 'all'
-        description: 'A default value to return if the key is not in the map.
-        If unset return the input.'
-
-    @outPorts = new noflo.OutPorts
-      data:
-        datatype: 'all'
-        description: 'The content of map[data].'
-
-    @inPorts.data.on 'data', (data) =>
-      if data of @map
-        @outPorts.data.send @map[data]
-      else
-        if @def
-          @outPorts.data.send @def
-        else
-          @outPorts.data.send data
-  
-    @inPorts.data.on 'disconnect', =>
-      @outPorts.data.disconnect()
-
-    @inPorts.map.on 'data', (map) =>
-      if typeof map is 'object'
-        @map = map
-        return
-      for mapPart in mapParts = map.split ','
-        mapEntry = mapPart.split ':'
-        if mapEntry[0] and  mapEntry[1]
-          @map[mapEntry[0].trim()] = mapEntry[1].trim()
-
-    @inPorts.def.on 'data', (def) =>
-      @def = def
-
-
-exports.getComponent = -> new Map()
-
+  c.process (input, output) ->
+    return unless input.hasData 'map', 'data'
+    map = prepareMap input.getData 'map'
+    data = input.getData 'data'
+    if data of map
+      output.sendDone
+        data: map[data]
+      return
+    if input.hasData 'def'
+      def = input.getData 'def'
+      output.sendDone
+        data: def
+      return
+    output.sendDone
+      data: data

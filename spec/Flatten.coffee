@@ -26,12 +26,18 @@ describe 'Flatten component', ->
   afterEach ->
     c.outPorts.out.detach out
 
-  describe.skip 'given some grouped IP structure', ->
+  describe 'given some grouped IP structure', ->
     it 'should produce a flattened structure', (done) ->
       expected = [
+        '< a'
         'DATA 1'
+        '>'
+        '< b'
         'DATA 2'
+        '>'
+        '< c'
         'DATA 3'
+        '>'
       ]
       received = []
 
@@ -42,6 +48,7 @@ describe 'Flatten component', ->
       out.on 'endgroup', ->
         received.push '>'
       out.on 'disconnect', ->
+        return unless received.length >= expected.length
         chai.expect(received).to.eql expected
         done()
 
@@ -79,6 +86,7 @@ describe 'Flatten component', ->
       out.on 'endgroup', ->
         received.push '>'
       out.on 'disconnect', ->
+        return unless received.length >= expected.length
         chai.expect(received).to.eql expected
         done()
 

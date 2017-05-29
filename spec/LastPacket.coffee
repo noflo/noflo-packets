@@ -42,7 +42,9 @@ describe 'LastPacket component', ->
         done()
 
       ins.connect()
+      ins.beginGroup 1
       ins.send 'one'
       ins.send 'two'
       ins.send 'three'
+      ins.endGroup()
       ins.disconnect()

@@ -63,9 +63,11 @@ describe 'FilterByValue component', ->
       filter.disconnect()
 
       ins.connect()
+      ins.beginGroup 'a'
       ins.send 0
       ins.send 1
       ins.send 2
       ins.send 1.5
       ins.send 0.5
+      ins.endGroup()
       ins.disconnect()

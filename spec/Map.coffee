@@ -59,13 +59,3 @@ describe 'Map component', ->
       map.send { true: 'wow', false: 'meh' }
       ins.send 'hello'
       ins.disconnect()
-
-  describe 'when configured', ->
-    it 'accepts maps as objects', ->
-      map.send { true: 'wow', false: 'meh' }
-      chai.expect(c.map).to.deep.equal { true: 'wow', false: 'meh' }
-    it 'accepts maps as string', ->
-      map.send 'true: wow, false: meh'
-      chai.expect(c.map).is.not.empty
-      chai.expect(c.map[true]).is.equal 'wow'
-      chai.expect(c.map[false]).is.equal 'meh'

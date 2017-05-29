@@ -67,8 +67,10 @@ describe 'FilterPackets component', ->
       regexp.disconnect()
 
       ins.connect()
+      ins.beginGroup 1
       ins.send 'abe'
       ins.send 'afg'
       ins.send 'dfg'
       ins.send 'dc'
+      ins.endGroup()
       ins.disconnect()

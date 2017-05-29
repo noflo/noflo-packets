@@ -1,30 +1,19 @@
 noflo = require("noflo")
 _ = require("underscore")
 
-class Compact extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = "Remove null"
+  c.inPorts.add 'in',
+    datatype: 'all'
+  c.outPorts.add 'out',
+    datatype: 'all'
 
-  description: "Remove null"
-
-  constructor: ->
-    @inPorts =
-      in: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
-
-    @inPorts.in.on "begingroup", (group) =>
-      @outPorts.out.beginGroup(group)
-
-    @inPorts.in.on "data", (data) =>
-      return unless data?
-      return if data.length is 0
-      return if _.isObject(data) and _.isEmpty(data)
-
-      @outPorts.out.send(data)
-
-    @inPorts.in.on "endgroup", (group) =>
-      @outPorts.out.endGroup()
-
-    @inPorts.in.on "disconnect", =>
-      @outPorts.out.disconnect()
-
-exports.getComponent = -> new Compact
+  c.process (input, output) ->
+    return unless input.hasData 'in'
+    data = input.getData 'in'
+    return output.done() unless data?
+    return output.done() if data.length is 0
+    return output.done() if _.isObject(data) and _.isEmpty(data)
+    output.sendDone
+      out: data

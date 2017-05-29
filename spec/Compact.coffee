@@ -29,9 +29,11 @@ describe 'Compact component', ->
   describe 'when receiving a mixed stream of packets', ->
     it 'should only return the "proper" ones', (done) ->
       expected = [
+        '< a'
         'DATA 1'
         'DATA 2'
         'DATA false'
+        '>'
       ]
       received = []
 
@@ -45,6 +47,7 @@ describe 'Compact component', ->
         chai.expect(received).to.eql expected
         done()
 
+      ins.beginGroup 'a'
       ins.send []
       ins.send 1
       ins.send ''
@@ -52,4 +55,5 @@ describe 'Compact component', ->
       ins.send null
       ins.send false
       ins.send {}
+      ins.endGroup()
       ins.disconnect()

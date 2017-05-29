@@ -1,39 +1,38 @@
 noflo = require 'noflo'
 
-class Replace extends noflo.Component
-
-  description: 'Replace incoming packets with something else if they match
+exports.getComponent = ->
+  c = new noflo.Component
+  c.icon = 'clipboard'
+  c.description = 'Replace incoming packets with something else if they match
   certain packets'
-
-  constructor: ->
-    @inPorts =
-      in: new noflo.Port 'any'
-      match: new noflo.Port 'any'
-      replace: new noflo.Port 'any'
-    @outPorts =
-      out: new noflo.Port 'any'
-
-    @inPorts.match.on 'connect', =>
-      @matches = []
-    @inPorts.match.on 'data', (match) =>
-      @matches.push match
-
-    @inPorts.replace.on 'connect', =>
-      @replacements = []
-    @inPorts.replace.on 'data', (replacement) =>
-      @replacements.push replacement
-
-    @inPorts.in.on 'begingroup', (group) =>
-      @outPorts.out.beginGroup group
-    @inPorts.in.on 'endgroup', =>
-      @outPorts.out.endGroup()
-    @inPorts.in.on 'disconnect', =>
-      @outPorts.out.disconnect()
-
-    @inPorts.in.on 'data', (data) =>
-      index = @matches.indexOf data
-
-      # Forward data as-is if no match; otherwise, send the replacement
-      @outPorts.out.send if index > -1 then @replacements[index] else data
-
-exports.getComponent = -> new Replace
+  c.inPorts.add 'in',
+    datatype: 'all'
+  c.inPorts.add 'match',
+    datatype: 'all'
+  c.inPorts.add 'replace',
+    datatype: 'all'
+  c.outPorts.add 'out',
+    datatype: 'all'
+  c.matches = {}
+  c.replacements = {}
+  c.tearDown = (callback) ->
+    c.matches = {}
+    c.replacements = {}
+  c.process (input, output) ->
+    if input.hasData 'match'
+      c.matches[input.scope] = [] unless c.matches[input.scope]
+      c.matches[input.scope].push input.getData 'match'
+      return output.done()
+    if input.hasData 'replace'
+      c.replacements[input.scope] = [] unless c.replacements[input.scope]
+      c.replacements[input.scope].push input.getData 'replace'
+      return output.done()
+    return unless input.hasData 'in'
+    data = input.getData 'in'
+    if c.matches[input.scope] and c.replacements[input.scope]
+      index = c.matches[input.scope].indexOf data
+      unless index is -1
+        # Send replacement
+        data = c.replacements[input.scope][index]
+    output.sendDone
+      out: data

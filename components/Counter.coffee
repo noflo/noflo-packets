@@ -1,51 +1,68 @@
 noflo = require 'noflo'
 
-class Counter extends noflo.Component
-  description: 'The count component receives input on a single input port,
-    and sends the number of data packets received to the output port when
-    the input disconnects'
-  icon: 'sort-numeric-asc'
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = 'send a number of packets received in a stream'
+  c.icon = 'sort-numeric-asc'
 
-  constructor: ->
-    @count = null
+  c.count = 0
+  c.brackets = []
+  c.tearDown = (callback) ->
+    c.count = 0
+    c.brackets = []
+    do callback
 
-    # Set up ports
-    @inPorts =
-      in: new noflo.Port
-      immediate: new noflo.Port 'boolean'
-      reset: new noflo.Port 'bang'
-    @outPorts =
-      count: new noflo.Port 'number'
-      out: new noflo.Port
+  c.inPorts.add 'in',
+    datatype: 'all'
+  c.inPorts.add 'immediate',
+    datatype: 'boolean'
+    control: true
+    default: false
+  c.inPorts.add 'reset',
+    datatype: 'bang'
+  c.outPorts.add 'count',
+    datatype: 'int'
+  c.outPorts.add 'out',
+    datatype: 'all'
 
-    #
-    @immediate = false
-    @inPorts.immediate.on 'data', (value) =>
-      @immediate = value
+  c.forwardBrackets = {}
+
+  c.process (input, output) ->
+    if input.hasData 'reset'
+      # When receiving bang on the reset, reset COUNT to zero
+      input.getData 'reset'
+      c.count = 0
+      return output.done()
+
+    return unless input.has 'in'
+
+    ip = input.get 'in'
+    if ip.type is 'openBracket'
+      c.brackets.push ip.data
+      return output.sendDone
+        out: ip
+    if ip.type is 'closeBracket'
+      c.brackets.pop()
+      output.send
+        out: ip
+      unless c.brackets.length
+        # Send COUNT at end of stream
+        output.send
+          count: c.count
+        c.count = 0
+      return output.done()
 
     # When receiving data from IN port
-    @inPorts.in.on 'data', (data) =>
-      # Prepare and increment counter
-      @count = 0 if @count is null
-      @count++
-      # Forward the data packet to OUT
-      @outPorts.out.send data if @outPorts.out.isAttached()
-      @sendCount() if @immediate
+    c.count++
+    # Forward the data packet to OUT
+    output.send
+      out: ip
 
-    # When receiving bang on the reset, reset COUNT to zero
-    @inPorts.reset.on 'data', (data) =>
-      @count = 0
-
-    # When IN port disconnects we send the COUNT
-    @inPorts.in.on 'disconnect', =>
-      @sendCount() unless @immediate
-      @outPorts.out.disconnect() if @outPorts.out.isAttached()
-      @count = null
-
-  sendCount: () ->
-    return unless @outPorts.count.isAttached()
-    @outPorts.count.send @count
-    @outPorts.count.disconnect()
-
-
-exports.getComponent = -> new Counter
+    immediate = false
+    if input.hasData 'immediate'
+      immediate = input.getData 'immediate'
+    if immediate or c.brackets.length is 0
+      output.send
+        count: c.count
+      c.count = 0 if c.brackets.length is 0
+    output.done()

@@ -1,58 +1,51 @@
 noflo = require("noflo")
 _ = require("underscore")
 
-class Range extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+  c.icon = 'filter'
+  c.description = "only forward a specified number of packets in a
+  stream"
+  c.inPorts.add 'in',
+    datatype: 'all'
+  c.inPorts.add 'start',
+    datatype: 'int'
+    control: true
+  c.inPorts.add 'end',
+    datatype: 'int'
+    control: true
+  c.inPorts.add 'length',
+    datatype: 'int'
+    control: true
+  c.outPorts.add 'out',
+    datatype: 'all'
+  c.forwardBrackets = {}
 
-  description: "only forward a specified number of packets in a
-  connection"
-
-  constructor: ->
-    @_start = -Infinity
-    @end = +Infinity
-    @length = +Infinity
-
-    @inPorts =
-      in: new noflo.Port
-      start: new noflo.Port
-      end: new noflo.Port
-      length: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
-
-    @inPorts.start.on "data", (start) =>
-      @_start = parseInt start
-    @inPorts.end.on "data", (end) =>
-      @end = parseInt end
-    @inPorts.length.on "data", (length) =>
-      @length = parseInt length
-
-    @inPorts.in.on "connect", =>
-      @totalCount = 0
-      @sentCount = 0
-
-    @inPorts.in.on "begingroup", (group) =>
-      @outPorts.out.beginGroup(group)
-
-    @inPorts.in.on "data", (data) =>
-      @totalCount++
-
-      if @totalCount > @_start and
-         @totalCount < @end and
-         @sentCount < @length
-        @sentCount++
-        @outPorts.out.send(data)
-
-    @inPorts.in.on "endgroup", (group) =>
-      @outPorts.out.endGroup()
-
-    @inPorts.in.on "disconnect", =>
-      @outPorts.out.disconnect()
-
-  shutdown: ->
-    @_start = -Infinity
-    @end = +Infinity
-    @length = +Infinity
-    @totalCount = 0
-    @sentCount = 0
-
-exports.getComponent = -> new Range
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
+    packets = input.getStream 'in'
+    start = -Infinity
+    if input.hasData 'start'
+      start = parseInt input.getData 'start'
+    end = +Infinity
+    if input.hasData 'end'
+      end = parseInt input.getData 'end'
+    length = +Infinity
+    if input.hasData 'length'
+      length = parseInt input.getData 'length'
+    sent = 0
+    total = 0
+    for ip in packets
+      if ip.type in ['openBracket', 'closeBracket']
+        sent = 0
+        total = 0
+        output.send
+          out: ip
+        continue
+      total++
+      if total > start and total < end and sent < length
+        output.send
+          out: ip
+        sent++
+      continue
+    output.done()

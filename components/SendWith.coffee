@@ -1,33 +1,34 @@
 noflo = require("noflo")
-_ = require("underscore")
 
-class SendWith extends noflo.Component
-
-  description: "Always send the specified packets with incoming packets."
-
-  constructor: ->
-    @with = []
-
-    @inPorts =
-      in: new noflo.Port
-      with: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
-
-    @inPorts.with.on "connect", =>
-      @with = []
-    @inPorts.with.on "data", (data) =>
-      @with.push data
-
-    @inPorts.in.on "begingroup", (group) =>
-      @outPorts.out.beginGroup group
-    @inPorts.in.on "data", (data) =>
-      @outPorts.out.send data
-    @inPorts.in.on "endgroup", (group) =>
-      @outPorts.out.endGroup()
-
-    @inPorts.in.on "disconnect", =>
-      @outPorts.out.send packet for packet in @with
-      @outPorts.out.disconnect()
-
-exports.getComponent = -> new SendWith
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = "Always send the specified packets with incoming packets."
+  c.inPorts.add 'in',
+    datatype: 'all'
+  c.inPorts.add 'with',
+    datatype: 'all'
+  c.outPorts.add 'out',
+    datatype: 'all'
+  c.with = {}
+  c.tearDown = (callback) ->
+    c.with = {}
+    do callback
+  c.forwardBrackets = {}
+  c.process (input, output) ->
+    if input.hasData 'with'
+      c.with[input.scope] = [] unless c.with[input.scope]
+      c.with[input.scope].push input.getData 'with'
+      return output.done()
+    return unless input.hasStream 'in'
+    packets = input.getStream 'in'
+    datas = packets.filter (ip) -> ip.type is 'data'
+    for ip, idx in packets
+      output.send
+        out: ip
+      continue unless ip is datas[datas.length - 1]
+      continue unless c.with[input.scope]
+      # Send 'withs' after last data IP
+      for packet in c.with[input.scope]
+        output.send
+          out: packet
+    output.done()

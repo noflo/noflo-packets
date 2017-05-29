@@ -34,12 +34,14 @@ describe 'SendWith component', ->
   describe 'given some packets to always send with the incoming', ->
     it 'should send both incoming and sent-with packets', (done) ->
       expected = [
+        '< a'
         'DATA 1'
         'DATA 2'
         'DATA 3'
         'DATA 4'
         'DATA 5'
         'DATA 6'
+        '>'
       ]
       received = []
 
@@ -60,7 +62,9 @@ describe 'SendWith component', ->
       withIn.disconnect()
 
       ins.connect()
+      ins.beginGroup 'a'
       ins.send 1
       ins.send 2
       ins.send 3
+      ins.endGroup()
       ins.disconnect()

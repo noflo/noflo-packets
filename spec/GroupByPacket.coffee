@@ -7,14 +7,14 @@ unless noflo.isBrowser()
 else
   baseDir = 'noflo-packets'
 
-describe 'Flatten component', ->
+describe 'GroupByPacket component', ->
   c = null
   ins = null
   out = null
   before (done) ->
     @timeout 4000
     loader = new noflo.ComponentLoader baseDir
-    loader.load 'packets/Flatten', (err, instance) ->
+    loader.load 'packets/GroupByPacket', (err, instance) ->
       return done err if err
       c = instance
       ins = noflo.internalSocket.createSocket()
@@ -26,17 +26,19 @@ describe 'Flatten component', ->
   afterEach ->
     c.outPorts.out.detach out
 
-  describe 'given some grouped IP structure', ->
-    it 'should produce a flattened structure', (done) ->
+  describe 'given some IPs', ->
+    it 'should group each packet by its number', (done) ->
       expected = [
         '< a'
+        '< 0'
         'DATA 1'
         '>'
-        '< b'
+        '< 1'
         'DATA 2'
         '>'
-        '< c'
+        '< 2'
         'DATA 3'
+        '>'
         '>'
       ]
       received = []
@@ -55,49 +57,7 @@ describe 'Flatten component', ->
       ins.connect()
       ins.beginGroup 'a'
       ins.send 1
-      ins.endGroup()
-      ins.beginGroup 'b'
       ins.send 2
-      ins.endGroup()
-      ins.beginGroup 'c'
       ins.send 3
-      ins.endGroup()
-      ins.disconnect()
-
-  describe 'given nested grouped IP structure', ->
-    it 'should produce a flattened structure', (done) ->
-      expected = [
-        '< a'
-        'DATA 1'
-        '>'
-        '< b'
-        'DATA 2'
-        '>'
-        '< c'
-        'DATA 3'
-        '>'
-      ]
-      received = []
-
-      out.on 'begingroup', (group) ->
-        received.push "< #{group}"
-      out.on 'data', (data) ->
-        received.push "DATA #{data}"
-      out.on 'endgroup', ->
-        received.push '>'
-      out.on 'disconnect', ->
-        return unless received.length >= expected.length
-        chai.expect(received).to.eql expected
-        done()
-
-      ins.connect()
-      ins.beginGroup 'a'
-      ins.send 1
-      ins.beginGroup 'b'
-      ins.send 2
-      ins.beginGroup 'c'
-      ins.send 3
-      ins.endGroup()
-      ins.endGroup()
       ins.endGroup()
       ins.disconnect()

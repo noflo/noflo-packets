@@ -1,39 +1,40 @@
 noflo = require("noflo")
 
-class FilterByValue extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = "Filter packets based on their value"
+  c.icon = 'filter'
+  c.inPorts.add 'in',
+    datatype: 'number'
+  c.inPorts.add 'filtervalue',
+    datatype: 'number'
+    control: true
+    required: true
+  c.outPorts.add 'lower',
+    datatype: 'number'
+  c.outPorts.add 'higher',
+    datatype: 'number'
+  c.outPorts.add 'equal',
+    datatype: 'number'
 
-  description: "Filter packets based on their value"
+  c.forwardBrackets =
+    in: ['lower', 'higher', 'equal']
 
-  constructor: ->
-    @filterValue = null
+  c.process (input, output) ->
+    return unless input.hasData 'in', 'filtervalue'
+    filterValue = input.getData 'filtervalue'
+    data = input.getData 'in'
 
-    @inPorts =
-      in: new noflo.Port
-      filtervalue: new noflo.Port
-    @outPorts =
-      lower: new noflo.Port
-      higher: new noflo.Port
-      equal: new noflo.Port
-
-    @inPorts.filtervalue.on 'data', (data) =>
-      @filterValue = data
-
-    @inPorts.in.on 'data', (data) =>
-      if data < @filterValue
-        @outPorts.lower.send data
-      else if data > @filterValue
-        @outPorts.higher.send data
-      else if data == @filterValue
-        @outPorts.equal.send data
-
-    @inPorts.in.on 'disconnect', =>
-      if @outPorts.lower.isConnected()
-        @outPorts.lower.disconnect()
-
-      if @outPorts.higher.isConnected()
-        @outPorts.higher.disconnect()
-
-      if @outPorts.equal.isConnected()
-        @outPorts.equal.disconnect()
-
-exports.getComponent = -> new FilterByValue
+    if data < filterValue
+      output.sendDone
+        lower: data
+      return
+    if data > filterValue
+      output.sendDone
+        higher: data
+      return
+    if data == filterValue
+      output.sendDone
+        equal: data
+      return
+    output.done()

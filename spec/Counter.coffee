@@ -76,8 +76,10 @@ describe 'Counter component', ->
         done()
 
       ins.connect()
+      ins.beginGroup 'a'
       ins.send 'hello'
       ins.send 'world'
+      ins.endGroup()
       ins.disconnect()
 
     it 'disconnecting and sending later should start new count', (done) ->
@@ -85,13 +87,16 @@ describe 'Counter component', ->
 
       count.on 'data', (data) ->
         chai.expect(packets.shift()).to.deep.equal data
-      count.on 'disconnect', ->
         done() if packets.length is 0
 
       ins.connect()
+      ins.beginGroup 'a'
       ins.send 'hello'
       ins.send 'world'
+      ins.endGroup()
       ins.disconnect()
       ins.connect()
+      ins.beginGroup 'b'
       ins.send 'foo'
+      ins.endGroup()
       ins.disconnect()

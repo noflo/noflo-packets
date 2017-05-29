@@ -1,42 +1,50 @@
 noflo = require("noflo")
 _ = require("underscore")
 
-class CountPackets extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = 'Count number of data IPs inside each stream'
+  c.icon = 'sort-numeric-asc'
+  c.inPorts.add 'in',
+    datatype: 'all'
+  c.outPorts.add 'out',
+    datatype: 'all'
+  c.outPorts.add 'count',
+    datatype: 'int'
+  c.counts = [0]
+  c.tearDown = (callback) ->
+    c.counts = [0]
+    do callback
 
-  description: "count number of data IPs"
-  icon: 'sort-numeric-asc'
+  c.forwardBrackets = {}
+  c.process (input, output) ->
+    return unless input.has 'in'
+    ip = input.get 'in'
+    if ip.type is 'openBracket'
+      c.counts.push 0
+      output.sendDone
+        out: ip
+        count: ip
+      return
+    if ip.type is 'closeBracket'
+      count = _.last c.counts
+      c.counts.pop()
+      output.send
+        count: count
+      output.sendDone
+        out: ip
+        count: ip
+      return
+    # Data packet, add to count
+    c.counts[c.counts.length - 1]++
+    # Forward packet
+    output.send
+      out: ip
 
-  constructor: ->
-    @inPorts =
-      in: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
-      count: new noflo.Port
+    if c.counts.length is 1
+      # Non-bracketed IP, send count
+      output.send
+        count: _.last c.counts
+      c.counts[c.counts.length - 1] = 0
 
-    @inPorts.in.on "connect", =>
-      @counts = [0]
-      count = _.last(@counts)
-
-    @inPorts.in.on "begingroup", (group) =>
-      @counts.push(0)
-      @outPorts.out.beginGroup(group)
-      @outPorts.count.beginGroup(group)
-
-    @inPorts.in.on "data", (data) =>
-      @counts[@counts.length - 1]++
-      @outPorts.out.send(data)
-
-    @inPorts.in.on "endgroup", (group) =>
-      count = _.last(@counts)
-      @outPorts.count.send(count)
-      @outPorts.count.endGroup()
-      @counts.pop()
-      @outPorts.out.endGroup(group)
-
-    @inPorts.in.on "disconnect", =>
-      count = _.last(@counts)
-      @outPorts.count.send(count)
-      @outPorts.count.disconnect()
-      @outPorts.out.disconnect()
-
-exports.getComponent = -> new CountPackets
+    output.done()

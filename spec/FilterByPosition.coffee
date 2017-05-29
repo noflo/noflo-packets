@@ -32,9 +32,11 @@ describe 'FilterByPosition component', ->
   describe 'given a sequence of boolean filter packets', ->
     it 'it should filter the packet stream', (done) ->
       expected = [
+        '< 1'
         'DATA passed'
         'DATA passed'
         'DATA passed'
+        '>'
       ]
       received = []
 
@@ -58,10 +60,12 @@ describe 'FilterByPosition component', ->
       filter.disconnect()
 
       ins.connect()
+      ins.beginGroup 1
       ins.send 'passed'
       ins.send 'passed'
       ins.send 'dropped'
       ins.send 'passed'
       ins.send 'dropped'
       ins.send 'dropped'
+      ins.endGroup()
       ins.disconnect()

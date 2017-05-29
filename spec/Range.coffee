@@ -32,16 +32,18 @@ describe 'Range component', ->
   beforeEach ->
     out = noflo.internalSocket.createSocket()
     c.outPorts.out.attach out
-  afterEach ->
+  afterEach (done) ->
     c.outPorts.out.detach out
     out = null
-    c.shutdown()
+    c.shutdown done
 
   describe 'given a starting position and a length', ->
     it 'should take the specified packets', (done) ->
       expected = [
+        '< a'
         'DATA 2'
         'DATA 3'
+        '>'
       ]
       received = []
 
@@ -60,22 +62,26 @@ describe 'Range component', ->
       length.send 2
 
       ins.connect()
+      ins.beginGroup 'a'
       ins.send 1
       ins.send 2
       ins.send 3
       ins.send 4
       ins.send 5
       ins.send 6
+      ins.endGroup()
       ins.disconnect()
 
   describe 'given a starting position and no length', ->
     it 'should send from starting packet until the end', (done) ->
       expected = [
+        '< b'
         'DATA 2'
         'DATA 3'
         'DATA 4'
         'DATA 5'
         'DATA 6'
+        '>'
       ]
       received = []
 
@@ -93,21 +99,25 @@ describe 'Range component', ->
       start.send 1
 
       ins.connect()
+      ins.beginGroup 'b'
       ins.send 1
       ins.send 2
       ins.send 3
       ins.send 4
       ins.send 5
       ins.send 6
+      ins.endGroup()
       ins.disconnect()
 
   describe 'given a length but no starting position', ->
     it 'should send the length of packets starting from first', (done) ->
       expected = [
+        '< c'
         'DATA 1'
         'DATA 2'
         'DATA 3'
         'DATA 4'
+        '>'
       ]
       received = []
 
@@ -125,19 +135,23 @@ describe 'Range component', ->
       length.send 4
 
       ins.connect()
+      ins.beginGroup 'c'
       ins.send 1
       ins.send 2
       ins.send 3
       ins.send 4
       ins.send 5
       ins.send 6
+      ins.endGroup()
       ins.disconnect()
 
   describe 'given a starting and an ending position', ->
     it 'should send packets between the positions', (done) ->
       expected = [
+        '< d'
         'DATA 2'
         'DATA 3'
+        '>'
       ]
       received = []
 
@@ -156,18 +170,22 @@ describe 'Range component', ->
       end.send 4
 
       ins.connect()
+      ins.beginGroup 'd'
       ins.send 1
       ins.send 2
       ins.send 3
       ins.send 4
       ins.send 5
       ins.send 6
+      ins.endGroup()
       ins.disconnect()
 
   describe 'given just an ending position', ->
     it 'should send from first until the specified position', (done) ->
       expected = [
+        '< e'
         'DATA 1'
+        '>'
       ]
       received = []
 
@@ -185,10 +203,12 @@ describe 'Range component', ->
       end.send 2
 
       ins.connect()
+      ins.beginGroup 'e'
       ins.send 1
       ins.send 2
       ins.send 3
       ins.send 4
       ins.send 5
       ins.send 6
+      ins.endGroup()
       ins.disconnect()

@@ -51,19 +51,25 @@ describe 'Unzip component', ->
         done()
 
       ins.connect()
+      ins.beginGroup 'a'
       ins.send 1
       ins.send 2
       ins.send 3
       ins.send 4
+      ins.endGroup()
       ins.disconnect()
 
   describe 'given some IPs with groups', ->
     it 'should route them to ODD and EVEN ignoring groups', (done) ->
       expected = [
+        'odd < group'
         'odd 1'
+        'even < group'
         'even 2'
         'odd 3'
         'even 4'
+        'odd >'
+        'even >'
       ]
       received = []
 

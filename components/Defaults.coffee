@@ -1,52 +1,56 @@
 noflo = require("noflo")
 _ = require("underscore")
 
-class Defaults extends noflo.Component
-
-  description: "if incoming is short of the length of the default
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = "if incoming is short of the length of the default
   packets, send the default packets."
+  c.inPorts.add 'in',
+    datatype: 'all'
+  c.inPorts.add 'default',
+    datatype: 'all'
+  c.outPorts.add 'out',
+    datatype: 'all'
 
-  constructor: ->
-    @defaults = []
+  c.defaults = []
+  c.brackets = []
+  c.tearDown = (callback) ->
+    c.defaults = []
+    c.brackets = []
+    do callback
 
-    @inPorts =
-      in: new noflo.Port
-      default: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
+  c.forwardBrackets = {}
+  c.process (input, output) ->
+    if input.hasData 'default'
+      def = input.getData 'default'
+      c.defaults.push def
+      output.done()
+    return unless input.has 'in'
+    ip = input.get 'in'
+    if ip.type is 'openBracket'
+      c.brackets.push []
+      output.sendDone
+        out: ip
+      return
+    if ip.type is 'closeBracket'
+      packets = c.brackets.pop()
+      defaulted = c.defaults.map (def, idx) ->
+        if packets[idx]?
+          return packets[idx]
+        return def
+      for def in defaulted
+        output.send
+          out: def
+      output.sendDone
+        out: ip
+      return
 
-    @inPorts.default.on "connect", =>
-      @defaults = []
-    @inPorts.default.on "data", (data) =>
-      @defaults.push(data)
+    unless c.brackets.length
+      # Unbracketed packet
+      data = if ip.data? then ip.data else c.defaults[0]
+      output.sendDone
+        out: data
+      return
 
-    @inPorts.in.on "connect", =>
-      @counts = [0]
-
-    @inPorts.in.on "begingroup", (group) =>
-      @counts.push(0)
-      @outPorts.out.beginGroup(group)
-
-    @inPorts.in.on "data", (data) =>
-      count = _.last(@counts)
-      data ?= @defaults[count]
-
-      @outPorts.out.send(data)
-
-      @counts[@counts.length - 1]++
-
-    @inPorts.in.on "endgroup", (group) =>
-      @padPackets(_.last(@counts))
-      @counts.pop()
-      @outPorts.out.endGroup()
-
-    @inPorts.in.on "disconnect", =>
-      @padPackets(@counts[0])
-      @outPorts.out.disconnect()
-
-  padPackets: (count) ->
-    while count < @defaults.length
-      @outPorts.out.send(@defaults[count])
-      count++
- 
-exports.getComponent = -> new Defaults
+    c.brackets[c.brackets.length - 1].push ip.data
+    output.done()

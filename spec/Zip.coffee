@@ -46,8 +46,10 @@ describe 'Zip component', ->
         done()
 
       ins.connect()
+      ins.beginGroup 'group'
       ins.send [1, 2, 3]
       ins.send ['a', 'b', 'c']
+      ins.endGroup()
       ins.disconnect()
 
   describe 'given some arrays with groups', ->
@@ -69,11 +71,13 @@ describe 'Zip component', ->
         done()
 
       ins.connect()
+      ins.beginGroup 'group'
       ins.beginGroup 'groupA'
       ins.send [1, 2, 3]
       ins.endGroup()
       ins.beginGroup 'groupB'
       ins.send ['a', 'b', 'c']
+      ins.endGroup()
       ins.endGroup()
       ins.disconnect()
 
@@ -96,6 +100,8 @@ describe 'Zip component', ->
         done()
 
       ins.connect()
+      ins.beginGroup 'group'
       ins.send 1
       ins.send 'a'
+      ins.endGroup()
       ins.disconnect()

@@ -1,43 +1,36 @@
 noflo = require 'noflo'
 
-class UniquePacket extends noflo.Component
-  constructor: ->
-    @seen = []
-    @groups = []
-
-    @inPorts =
-      in: new noflo.Port 'all'
-      clear: new noflo.Port 'bang'
-    @outPorts =
-      out: new noflo.Port 'all'
-      duplicate: new noflo.Port 'all'
-
-    @inPorts.in.on 'begingroup', (group) =>
-      @groups.push group
-    @inPorts.in.on 'data', (data) =>
-      unless @unique data
-        return unless @outPorts.duplicate.isAttached()
-        @outPorts.duplicate.send data
-        return
-      for group in @groups
-        @outPorts.out.beginGroup group
-      @outPorts.out.send data
-      for group in @groups
-        @outPorts.out.endGroup()
-    @inPorts.in.on 'endgroup', =>
-      @groups.pop()
-    @inPorts.in.on 'disconnect', =>
-      @outPorts.out.disconnect()
-      return unless @outPorts.duplicate.isAttached()
-      @outPorts.duplicate.disconnect()
-
-    @inPorts.clear.on 'data', =>
-      @seen = []
-      @groups = []
-
-  unique: (packet) ->
-    return false unless @seen.indexOf(packet) is -1
-    @seen.push packet
-    return true
-
-exports.getComponent = -> new UniquePacket
+exports.getComponent = ->
+  c = new noflo.Component
+  c.icon = 'filter'
+  c.description = 'Send only packets that are unique'
+  c.inPorts.add 'in',
+    datatype: 'all'
+  c.inPorts.add 'clear',
+    datatype: 'bang'
+  c.outPorts.add 'out',
+    datatype: 'all'
+  c.outPorts.add 'duplicate',
+    datatype: 'all'
+  c.seen = {}
+  c.tearDown = (callback) ->
+    c.seen = {}
+    do callback
+  c.forwardBrackets =
+    in: ['out', 'duplicate']
+  c.process (input, output) ->
+    if input.hasData 'clear'
+      input.getData 'clear'
+      c.seen = {}
+      return output.done()
+    return unless input.hasData 'in'
+    data = input.getData 'in'
+    c.seen[input.scope] = [] unless c.seen[input.scope]
+    if c.seen[input.scope].indexOf(data) is -1
+      # Unique
+      output.send
+        out: data
+      c.seen[input.scope].push data
+      return output.done()
+    output.sendDone
+      duplicate: data

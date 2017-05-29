@@ -7,16 +7,22 @@ unless noflo.isBrowser()
 else
   baseDir = 'noflo-packets'
 
-describe 'Compact component', ->
+describe 'Replace component', ->
   c = null
   ins = null
+  match = null
+  replace = null
   out = null
   before (done) ->
     @timeout 4000
     loader = new noflo.ComponentLoader baseDir
-    loader.load 'packets/Compact', (err, instance) ->
+    loader.load 'packets/Replace', (err, instance) ->
       return done err if err
       c = instance
+      match = noflo.internalSocket.createSocket()
+      c.inPorts.match.attach match
+      replace = noflo.internalSocket.createSocket()
+      c.inPorts.replace.attach replace
       ins = noflo.internalSocket.createSocket()
       c.inPorts.in.attach ins
       done()
@@ -25,20 +31,23 @@ describe 'Compact component', ->
     c.outPorts.out.attach out
   afterEach ->
     c.outPorts.out.detach out
+    out = null
 
-  describe 'when receiving a mixed stream of packets', ->
-    it 'should only return the "proper" ones', (done) ->
+  describe 'given a stream of packets and replacement data', ->
+    it 'should replace certain packets', (done) ->
       expected = [
         '< a'
         'DATA 1'
-        'DATA 2'
-        'DATA false'
+        'DATA 42'
+        'DATA 3'
+        'DATA 36'
+        'DATA 5'
         '>'
       ]
       received = []
 
-      out.on 'begingroup', (grp) ->
-        received.push "< #{grp}"
+      out.on 'begingroup', (group) ->
+        received.push "< #{group}"
       out.on 'data', (data) ->
         received.push "DATA #{data}"
       out.on 'endgroup', ->
@@ -47,13 +56,21 @@ describe 'Compact component', ->
         chai.expect(received).to.eql expected
         done()
 
+      match.connect()
+      match.send 2
+      match.send 4
+      match.disconnect()
+      replace.connect()
+      replace.send 42
+      replace.send 36
+      replace.disconnect()
+
+      ins.connect()
       ins.beginGroup 'a'
-      ins.send []
       ins.send 1
-      ins.send ''
       ins.send 2
-      ins.send null
-      ins.send false
-      ins.send {}
+      ins.send 3
+      ins.send 4
+      ins.send 5
       ins.endGroup()
       ins.disconnect()

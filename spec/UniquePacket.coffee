@@ -10,19 +10,20 @@ describe 'UniquePacket component', ->
   c = null
   ins = null
   out = null
-  loader = null
-  before ->
+  before (done) ->
     loader = new noflo.ComponentLoader baseDir
-  beforeEach (done) ->
-    @timeout 4000
     loader.load 'packets/UniquePacket', (err, instance) ->
       return done err if err
       c = instance
       ins = noflo.internalSocket.createSocket()
-      out = noflo.internalSocket.createSocket()
       c.inPorts.in.attach ins
-      c.outPorts.out.attach out
       done()
+  beforeEach ->
+    out = noflo.internalSocket.createSocket()
+    c.outPorts.out.attach out
+  afterEach (done) ->
+    c.outPorts.out.detach out
+    c.shutdown done
 
   describe 'when instantiated', ->
     it 'should have an input port', ->
@@ -41,9 +42,11 @@ describe 'UniquePacket component', ->
         done()
 
       ins.connect()
+      ins.beginGroup 'a'
       ins.send 'one'
       ins.send 'two'
       ins.send 'three'
+      ins.endGroup()
       ins.disconnect()
 
     it 'test two unique', (done) ->
@@ -56,7 +59,9 @@ describe 'UniquePacket component', ->
         done()
 
       ins.connect()
+      ins.beginGroup 'a'
       ins.send 'one'
       ins.send 'one'
       ins.send 'two'
+      ins.endGroup()
       ins.disconnect()

@@ -1,37 +1,44 @@
 noflo = require("noflo")
 _ = require("underscore")
 
-class FilterPackets extends noflo.Component
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = "Filter packets matching some RegExp strings"
+  c.icon = 'filter'
+  c.inPorts.add 'in',
+    datatype: 'string'
+  c.inPorts.add 'regexp',
+    datatype: 'string'
+  c.outPorts.add 'out',
+    datatype: 'string'
+  c.outPorts.add 'missed',
+    datatype: 'string'
+  c.outPorts.add 'passthru',
+    datatype: 'string'
 
-  description: "Filter packets matching some RegExp strings"
+  c.forwardBrackets =
+    in: ['out', 'missed', 'passthru']
 
-  constructor: ->
-    @regexps = []
+  c.regexps = []
+  c.tearDown = (callback) ->
+    c.regexps = []
 
-    @inPorts =
-      in: new noflo.Port
-      regexp: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
-      missed: new noflo.Port
-      passthru: new noflo.Port
+  c.process (input, output) ->
+    if input.hasData 'regexp'
+      reg = input.getData 'regexp'
+      if typeof reg is 'string'
+        reg = new RegExp reg
+      c.regexps.push reg
+      output.done()
+      return
 
-    @inPorts.regexp.on "connect", =>
-      @regexps = []
-    @inPorts.regexp.on "data", (regexp) =>
-      @regexps.push new RegExp regexp
-
-    @inPorts.in.on "data", (data) =>
-      if _.any @regexps, ((regexp) -> data.match regexp)
-        @outPorts.out.send data
-      else
-        @outPorts.missed.send data
-
-      @outPorts.passthru.send data if @outPorts.passthru.isAttached()
-
-    @inPorts.in.on "disconnect", =>
-      @outPorts.out.disconnect()
-      @outPorts.missed.disconnect()
-      @outPorts.passthru.disconnect() if @outPorts.passthru.isAttached()
-
-exports.getComponent = -> new FilterPackets
+    return unless input.hasData 'in'
+    data = input.getData 'in'
+    if _.any c.regexps, ((regexp) -> data.match regexp)
+      output.sendDone
+        out: data
+        passthru: data
+      return
+    output.sendDone
+      missed: data
+      passthru: data

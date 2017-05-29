@@ -1,26 +1,34 @@
 noflo = require 'noflo'
 
-class GroupByPacket extends noflo.Component
-  constructor: ->
-    @packets = 0
-
-    @inPorts =
-      in: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
-
-    @inPorts.in.on 'begingroup', (group) =>
-      @outPorts.out.beginGroup group
-      @packets = 0
-    @inPorts.in.on 'data', (data) =>
-      @outPorts.out.beginGroup @packets
-      @outPorts.out.send data
-      @outPorts.out.endGroup()
-      @packets++
-    @inPorts.in.on 'endgroup', =>
-      @outPorts.out.endGroup()
-    @inPorts.in.on 'disconnect', =>
-      @packets = 0
-      @outPorts.out.disconnect()
-
-exports.getComponent = -> new GroupByPacket
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = 'Surround each data packet by a bracket'
+  c.icon = 'indent'
+  c.inPorts.add 'in',
+    datatype: 'all'
+  c.outPorts.add 'out',
+    datatype: 'all'
+  c.forwardBrackets = {}
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
+    packets = input.getStream 'in'
+    datas = 0
+    for ip in packets
+      if ip.type is 'openBracket'
+        datas = 0
+        output.send
+          out: ip
+        continue
+      if ip.type is 'closeBracket'
+        output.send
+          out: ip
+        continue
+      # Surround data packet with a new bracket telling position in stream
+      output.send
+        out: new noflo.IP 'openBracket', datas
+      output.send
+        out: ip
+      output.send
+        out: new noflo.IP 'closeBracket', datas
+      datas++
+    output.done()

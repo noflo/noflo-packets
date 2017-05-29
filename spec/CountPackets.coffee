@@ -49,15 +49,18 @@ describe 'CountPackets component', ->
         done()
 
       ins.connect()
+      ins.beginGroup '1'
       ins.send 'a'
       ins.send 'b'
       ins.send 'c'
       ins.send 'd'
+      ins.endGroup()
       ins.disconnect()
 
   describe 'given some IPs in groups', ->
     it 'should forward them and return correct number per each group', (done) ->
       expectedOut = [
+        '< '
         '< '
         'DATA a'
         'DATA b'
@@ -66,9 +69,11 @@ describe 'CountPackets component', ->
         'DATA c'
         '>'
         'DATA d'
+        '>'
       ]
       receivedOut = []
       expectedCount = [
+        '< '
         '< '
         'DATA 2'
         '>'
@@ -76,6 +81,7 @@ describe 'CountPackets component', ->
         'DATA 1'
         '>'
         'DATA 1'
+        '>'
       ]
       receivedCount = []
 
@@ -92,11 +98,14 @@ describe 'CountPackets component', ->
       count.on 'endgroup', ->
         receivedCount.push '>'
       count.on 'disconnect', ->
-        chai.expect(receivedCount).to.eql expectedCount
-        chai.expect(receivedOut).to.eql expectedOut
-        done()
+        setTimeout ->
+          chai.expect(receivedCount).to.eql expectedCount
+          chai.expect(receivedOut).to.eql expectedOut
+          done()
+        , 1
 
       ins.connect()
+      ins.beginGroup ''
       ins.beginGroup ''
       ins.send 'a'
       ins.send 'b'
@@ -105,4 +114,5 @@ describe 'CountPackets component', ->
       ins.send 'c'
       ins.endGroup()
       ins.send 'd'
+      ins.endGroup()
       ins.disconnect()

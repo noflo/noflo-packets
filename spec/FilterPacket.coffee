@@ -62,8 +62,10 @@ describe 'FilterPacket component', ->
     regexp.send '[tg]rue'
 
     ins.connect()
+    ins.beginGroup 1
     ins.send "grue"
     ins.send false
     ins.send "foo"
     ins.send true
+    ins.endGroup()
     ins.disconnect()

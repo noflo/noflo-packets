@@ -6,3 +6,8 @@ connections in [NoFlo](http://noflojs.org/).
 
 Feel free to contribute new components and graphs! I'll try to
 incorporate as soon as time allows.
+
+## Changes
+
+* 0.3.1 (git master)
+  - Removed the obsolete MergeConnections graph. Use the Flatten component instead

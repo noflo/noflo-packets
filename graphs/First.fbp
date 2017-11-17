@@ -1,4 +1,7 @@
 INPORT=Range.IN:IN
 OUTPORT=Range.OUT:OUT
 
+# @description Only forward the first packet in a stream
+# @icon list-ol
+
 '1' -> LENGTH Range(packets/Range)

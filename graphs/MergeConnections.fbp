@@ -1,4 +1,0 @@
-INPORT=Merge.IN:IN
-OUTPORT=Flatten.OUT:OUT
-
-Merge(Merge) OUT -> IN Flatten(packets/Flatten)

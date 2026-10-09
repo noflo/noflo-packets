@@ -1,0 +1,20 @@
+topic: packets/Replace
+cases:
+  - name: replacing a matching packet
+    assertion: should send the replacement
+    inputs:
+      match: "old"
+      replace: "new"
+      in: "old"
+    expect:
+      out:
+        equals: "new"
+  - name: passing a non-matching packet
+    assertion: should send the packet as-is
+    inputs:
+      match: "old"
+      replace: "new"
+      in: "other"
+    expect:
+      out:
+        equals: "other"

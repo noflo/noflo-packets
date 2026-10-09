@@ -1,0 +1,18 @@
+topic: packets/FilterPacket
+cases:
+  - name: passing a matching packet
+    assertion: should send to out
+    inputs:
+      regexp: "^foo"
+      in: "foobar"
+    expect:
+      out:
+        equals: "foobar"
+  - name: missing a non-matching packet
+    assertion: should send to missed
+    inputs:
+      regexp: "^foo"
+      in: "barfoo"
+    expect:
+      missed:
+        equals: "barfoo"

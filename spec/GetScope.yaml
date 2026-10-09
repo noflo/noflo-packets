@@ -1,0 +1,11 @@
+topic: packets/GetScope
+cases:
+  - name: forwarding data
+    assertion: should send the data on out
+    inputs:
+      in:
+        hello: world
+    expect:
+      out:
+        equals:
+          hello: world

@@ -1,10 +1,10 @@
 {
-  "name": "noflo-packets",
+  "name": "@noflo/packets",
   "description": "Packet Utilities for NoFlo",
+  "version": "2.0.0-alpha.1",
   "keywords": [
     "noflo",
     "packets",
-    "connections",
     "utilities"
   ],
   "author": "Kenneth Kan <kenhkan@gmail.com>",
@@ -12,34 +12,48 @@
     {
       "name": "Henri Bergius",
       "email": "henri.bergius@iki.fi"
+    },
+    {
+      "name": "Ryan Shaw",
+      "email": "ryanshaw@unc.edu"
     }
   ],
-  "version": "0.3.0",
-  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/noflo/noflo-packets.git"
+    "url": "https://github.com/noflo/noflo-packets"
   },
+  "license": "MIT",
   "dependencies": {
-    "noflo": "^1.0.0",
-    "underscore": "~1.9.0"
+    "@noflo/noflo": "^2.0.0-alpha.2"
   },
   "devDependencies": {
-    "chai": "^4.0.0",
-    "grunt": "^1.0.1",
-    "grunt-coffeelint": "^0.0.16",
-    "grunt-contrib-coffee": "^2.0.0",
-    "grunt-contrib-uglify": "^3.0.1",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-mocha-phantomjs": "^4.0.0",
-    "grunt-mocha-test": "^0.13.3",
-    "grunt-noflo-browser": "^1.5.0",
-    "mocha": "^5.2.0"
-  },
-  "noflo": {
-    "icon": "dropbox"
+    "@biomejs/biome": "^2.0.0",
+    "@noflo/fbp-spec-runner": "^2.0.0-alpha.2",
+    "@noflo/loader-node": "^2.0.0-alpha.2",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.0.0"
   },
   "scripts": {
-    "test": "grunt test"
-  }
+    "lint": "npx @biomejs/biome check --use-editorconfig=true components/ spec/ test/",
+    "format": "npx @biomejs/biome check --use-editorconfig=true --write components/ spec/ test/",
+    "types": "tsc -p tsconfig.json",
+    "test": "npm run types && npm run lint && npm run test:spec && npm run test:node",
+    "test:spec": "node \"$(node -p \"require.resolve('@noflo/fbp-spec-runner/src/cli.js')\")\" spec/",
+    "test:node": "node --test test/*.test.js",
+    "test:bun": "bun test test/*.test.js",
+    "test:deno": "deno test --allow-all --no-check test/*.test.js"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "components/",
+    "graphs/",
+    "spec/",
+    "test/",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ]
 }

@@ -1,0 +1,20 @@
+topic: packets/Map
+cases:
+  - name: mapping a known key from an object map
+    assertion: should send the mapped value
+    inputs:
+      map:
+        foo: bar
+      data: "foo"
+    expect:
+      data:
+        equals: "bar"
+  - name: using the default for unknown keys
+    assertion: should send the default value
+    inputs:
+      map: "foo:bar"
+      def: "fallback"
+      data: "quux"
+    expect:
+      data:
+        equals: "fallback"

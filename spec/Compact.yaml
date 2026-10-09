@@ -1,0 +1,9 @@
+topic: packets/Compact
+cases:
+  - name: passing a normal value
+    assertion: should forward the value
+    inputs:
+      in: "hello"
+    expect:
+      out:
+        equals: "hello"

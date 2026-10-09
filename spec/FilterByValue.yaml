@@ -1,0 +1,26 @@
+topic: packets/FilterByValue
+cases:
+  - name: routing a lower value
+    assertion: should send to lower
+    inputs:
+      filtervalue: 10
+      in: 5
+    expect:
+      lower:
+        equals: 5
+  - name: routing a higher value
+    assertion: should send to higher
+    inputs:
+      filtervalue: 10
+      in: 15
+    expect:
+      higher:
+        equals: 15
+  - name: routing an equal value
+    assertion: should send to equal
+    inputs:
+      filtervalue: 10
+      in: 10
+    expect:
+      equal:
+        equals: 10

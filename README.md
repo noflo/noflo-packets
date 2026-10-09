@@ -1,13 +1,31 @@
-Packet Utilities for NoFlo [![Build Status](https://secure.travis-ci.org/noflo/noflo-packets.png?branch=master)](https://travis-ci.org/noflo/noflo-packets)
-===============================
+# @noflo/packets
 
-This package provides utility components to manipulate packets and
-connections in [NoFlo](http://noflojs.org/).
+Packet Utilities for [NoFlo](http://noflojs.org/)
 
-Feel free to contribute new components and graphs! I'll try to
-incorporate as soon as time allows.
+This package provides utility components for working with NoFlo
+information packets: counting, filtering, zipping, scoping, and
+sequencing.
 
-## Changes
+## Usage
 
-* 0.3.1 (git master)
-  - Removed the obsolete MergeConnections graph. Use the Flatten component instead
+Install the package:
+
+    npm install @noflo/packets
+
+The components are then available under the `packets/` namespace, for
+example `packets/CountPackets` or `packets/SetScope`.
+
+Components include:
+
+- `CountPackets`, `Counter` — count data packets per stream
+- `Compact`, `Defaults`, `LastPacket`, `Range`, `UniquePacket` — filter
+  and reduce streams
+- `FilterByPosition`, `FilterByValue`, `FilterPacket`, `FilterPackets`,
+  `Map`, `Replace` — filter and transform packet values
+- `GetScope`, `SetScope`, `ScopeToObject`, `ScopeFromObject` — manage
+  packet scopes
+- `Flatten`, `GroupByPacket`, `SendWith`, `Zip`, `Unzip` — restructure
+  streams
+- `StepSequencer` — timestamp-based value sequencing
+
+The `graphs/First` graph forwards only the first packet of a stream.

@@ -1,0 +1,9 @@
+topic: packets/Unzip
+cases:
+  - name: routing the first packet to odd
+    assertion: should send to odd
+    inputs:
+      in: "first"
+    expect:
+      odd:
+        equals: "first"

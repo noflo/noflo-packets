@@ -1,0 +1,9 @@
+topic: packets/LastPacket
+cases:
+  - name: forwarding a single data packet
+    assertion: should send the packet
+    inputs:
+      in: "only"
+    expect:
+      out:
+        equals: "only"

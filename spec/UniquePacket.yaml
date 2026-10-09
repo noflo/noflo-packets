@@ -1,0 +1,9 @@
+topic: packets/UniquePacket
+cases:
+  - name: passing a unique packet
+    assertion: should send to out
+    inputs:
+      in: "hello"
+    expect:
+      out:
+        equals: "hello"

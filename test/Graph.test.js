@@ -23,6 +23,10 @@ const loadGraph = async () => {
   const loader = new noflo.ComponentLoader({ registry });
   loader.registerGraph("packets", "First", graph);
   const component = await loader.load("packets/First");
+  // Starting the component starts the internal network and delivers its
+  // IIPs (the length control). Data sent before start would race the
+  // implicit data-triggered start and not see the IIPs.
+  await component.start();
   return component;
 };
 
@@ -98,15 +102,7 @@ describe("First graph", () => {
         ips.push(event.detail);
       },
     );
-    // NOTE (core finding): the subgraph network starts on the first
-    // activation and delivers its internal IIPs (the length control
-    // here) asynchronously after that — a data burst sent with the
-    // first activation races the IIP, so early packets are not limited.
-    // 1.x delivered subgraph initials before any data. Send the first
-    // packet, let the IIP settle, then verify the limiting applies to
-    // later packets.
     inSocket.post(new noflo.IP("data", "a"));
-    await new Promise((resolve) => setTimeout(resolve, 100));
     inSocket.post(new noflo.IP("data", "b"));
     inSocket.post(new noflo.IP("data", "c"));
     await new Promise((resolve) => setTimeout(resolve, 100));
